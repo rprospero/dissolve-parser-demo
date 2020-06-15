@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- import           Control.Applicative
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Void
 import Text.Megaparsec
 import Text.Megaparsec.Char
+import Text.Megaparsec.Debug
 import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void T.Text
@@ -14,7 +14,9 @@ data MasterTerm = MasterBond T.Text T.Text Double Double
   | MasterAngle T.Text T.Text Double Double
   deriving (Show)
 
-data Section = Master [MasterTerm] | Species T.Text [SpeciesTerm]
+data Section = Master [MasterTerm]
+  | Species T.Text [SpeciesTerm]
+  | PairPotential [PairPotentialTerm]
   deriving (Show)
 
 data SpeciesTerm =
@@ -22,7 +24,25 @@ data SpeciesTerm =
   | SpeciesBond Int Int T.Text
   | SpeciesAngle Int Int Int T.Text
   | SpeciesIsotopologue T.Text T.Text
-  | SpeciesSite
+  | SpeciesSite T.Text [SiteTerm]
+  deriving (Show)
+
+data SiteTerm =
+  SiteOrigin [Int]
+  | SiteOriginMassWeighted Bool
+  | SiteXAxis Int
+  | SiteYAxis Int
+  deriving (Show)
+
+data PairPotentialTerm =
+  PairPotentialsParameters T.Text T.Text Double T.Text Double Double Double Double
+  | PairPotentialsRange Double
+  | PairPotentialsDelta Double
+  | PairPotentialsCoulombTruncation Truncation
+  | PairPotentialsShortRangeTruncation Truncation
+  deriving (Show)
+
+data Truncation = Shifted
   deriving (Show)
 
 sc = L.space space1 (L.skipLineComment "#") empty
@@ -36,10 +56,14 @@ constant = lexeme $ L.signed sc L.float
 word :: Parser T.Text
 word = T.pack <$> (some $ letterChar <|> char '-')
 
+printable :: Parser T.Text
+printable = T.pack <$> (some $ alphaNumChar <|> symbolChar <|> punctuationChar)
+
 parser :: Parser [Section]
 parser = some . choice $ [
   Master <$> parseBlock "Master" masterTerm
   , uncurry Species <$> parseNamedBlock "Species" speciesTerm
+  , PairPotential <$> parseBlock "PairPotentials" pairPotentialTerm
   ]
 
 parseBlock :: T.Text -> Parser a -> Parser [a]
@@ -54,10 +78,19 @@ parseNamedBlock :: T.Text -> Parser a -> Parser (T.Text, [a])
 parseNamedBlock name inner= do
   sc
   symbol name
-  title <- quoted word
+  title <- quoted . lexeme . some $ alphaNumChar
   result <- some inner
   symbol $ "End" <> name
-  return (title, result)
+  return (T.pack title, result)
+
+parseBool :: Parser Bool
+parseBool = true <|> false
+  where
+    true = symbol "True" *> return True
+    false = symbol "True" *> return False
+
+parseInt :: Parser Int
+parseInt = lexeme L.decimal
 
 masterTerm :: Parser MasterTerm
 masterTerm = choice [masterBond, masterAngle]
@@ -75,10 +108,11 @@ speciesTerm = choice [speciesAtom
                      , speciesBond
                      , speciesAngle
                      , speciesIsotopologue
+                     , speciesSite
                      ]
 
 quoted :: Parser p -> Parser p
-quoted p = lexeme $ "'" *> p <* "'"
+quoted p = lexeme $ between "'" "'" p
 
 speciesAtom :: Parser SpeciesTerm
 speciesAtom = do
@@ -106,6 +140,76 @@ speciesIsotopologue = do
       second <- L.decimal
       sc
       return $ first <> "=" <> T.pack (show second)
+
+speciesSite = do
+  (name, terms) <- parseNamedBlock "Site" siteTerm
+  return $ SpeciesSite name terms
+
+siteTerm :: Parser SiteTerm
+siteTerm = choice [
+  siteOriginMassWeighted
+  , siteOrigin
+  , siteXAxis
+  , siteYAxis
+  ]
+
+siteOrigin :: Parser SiteTerm
+siteOrigin = do
+  symbol "Origin"
+  SiteOrigin <$> (lexeme L.decimal `sepBy` sc)
+
+siteOriginMassWeighted :: Parser SiteTerm
+siteOriginMassWeighted = do
+  symbol "OriginMassWeighted"
+  SiteOriginMassWeighted <$> parseBool
+
+siteXAxis :: Parser SiteTerm
+siteXAxis = do
+  symbol "XAxis"
+  SiteXAxis <$> parseInt
+
+siteYAxis :: Parser SiteTerm
+siteYAxis = do
+  symbol "YAxis"
+  SiteYAxis <$> parseInt
+
+pairPotentialTerm :: Parser PairPotentialTerm
+pairPotentialTerm = choice [
+  pairPotentialsParameters
+  , pairPotentialsRange
+  , pairPotentialsDelta
+  , pairPotentialsCoulombTruncation
+  , pairPotentialsShortRangeTruncation
+  ]
+
+pairPotentialsParameters :: Parser PairPotentialTerm
+pairPotentialsParameters = do
+  symbol "Parameters"
+  PairPotentialsParameters <$> lexeme word <*> lexeme word <*> constant <*> lexeme word <*> constant <*> constant <*> constant <*> constant
+
+pairPotentialsRange :: Parser PairPotentialTerm
+pairPotentialsRange = do
+  symbol "Range"
+  PairPotentialsRange <$> constant
+
+pairPotentialsDelta :: Parser PairPotentialTerm
+pairPotentialsDelta = do
+  symbol "Delta"
+  PairPotentialsDelta <$> constant
+
+pairPotentialsCoulombTruncation :: Parser PairPotentialTerm
+pairPotentialsCoulombTruncation = do
+  symbol "CoulombTruncation"
+  PairPotentialsCoulombTruncation <$> truncation
+
+pairPotentialsShortRangeTruncation :: Parser PairPotentialTerm
+pairPotentialsShortRangeTruncation = do
+  symbol "ShortRangeTruncation"
+  PairPotentialsShortRangeTruncation <$> truncation
+
+truncation = do
+  lexeme "Shifted"
+  return Shifted
 
 main = do
   info <- readFile "water.txt"

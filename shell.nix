@@ -7,7 +7,7 @@ in
 
 pkgs.mkShell {
   buildInputs = [
-    (pkgs.haskell.packages.ghc882.ghcWithPackages (pkgs: [pkgs.Cabal pkgs.hlint pkgs.megaparsec]))
+    (pkgs.haskell.packages.ghc882.ghcWithPackages (pkgs: [pkgs.Cabal pkgs.hlint pkgs.megaparsec pkgs.parser-combinators]))
     # (all-hies.selection { selector = p: { inherit (p) ghc882; }; })
   ];
 }
