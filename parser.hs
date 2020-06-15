@@ -10,13 +10,14 @@ import qualified Text.Megaparsec.Char.Lexer as L
 
 type Parser = Parsec Void T.Text
 
-data MasterTerm = MasterBond T.Text T.Text Double Double
-  | MasterAngle T.Text T.Text Double Double
-  deriving (Show)
-
 data Section = Master [MasterTerm]
   | Species T.Text [SpeciesTerm]
   | PairPotential [PairPotentialTerm]
+  | Configuration T.Text [ConfigurationTerm]
+  deriving (Show)
+
+data MasterTerm = MasterBond T.Text T.Text Double Double
+  | MasterAngle T.Text T.Text Double Double
   deriving (Show)
 
 data SpeciesTerm =
@@ -45,6 +46,32 @@ data PairPotentialTerm =
 data Truncation = Shifted
   deriving (Show)
 
+data ConfigurationTerm =
+  ConfigurationGenerator [GeneratorTerm]
+  | ConfigurationTemperature Double
+  deriving (Show)
+
+data GeneratorTerm =
+  GeneratorParameter [ParameterTerm]
+  | GeneratorBox [BoxTerm]
+  | GeneratorAddSpecies [AddSpeciesTerm]
+  deriving (Show)
+
+data ParameterTerm = ParameterReal T.Text Double
+  deriving (Show)
+
+data BoxTerm = BoxLength Double Double Double
+  | BoxAngles Double Double Double
+  | BoxNonPeriodic Bool
+  deriving (Show)
+
+data AddSpeciesTerm = AddSpeciesSpecies T.Text
+  | AddSpeciesPopulation T.Text
+  | AddSpeciesDensity T.Text T.Text
+  | AddSpeciesRotate Bool
+  | AddSpeciesPositioning T.Text
+  deriving (Show)
+
 sc = L.space space1 (L.skipLineComment "#") empty
 
 symbol = L.symbol sc
@@ -64,6 +91,7 @@ parser = some . choice $ [
   Master <$> parseBlock "Master" masterTerm
   , uncurry Species <$> parseNamedBlock "Species" speciesTerm
   , PairPotential <$> parseBlock "PairPotentials" pairPotentialTerm
+  , uncurry Configuration <$> parseNamedBlock "Configuration" configurationTerm
   ]
 
 parseBlock :: T.Text -> Parser a -> Parser [a]
@@ -87,7 +115,7 @@ parseBool :: Parser Bool
 parseBool = true <|> false
   where
     true = symbol "True" *> return True
-    false = symbol "True" *> return False
+    false = symbol "False" *> return False
 
 parseInt :: Parser Int
 parseInt = lexeme L.decimal
@@ -210,6 +238,77 @@ pairPotentialsShortRangeTruncation = do
 truncation = do
   lexeme "Shifted"
   return Shifted
+
+configurationTerm = choice [
+  configurationGenerator
+  , configurationTemperature
+  ]
+
+configurationTemperature = do
+  symbol "Temperature"
+  ConfigurationTemperature <$> constant
+
+configurationGenerator = ConfigurationGenerator <$> parseBlock "Generator" generatorTerm
+
+generatorTerm = choice [
+  generatorParameter
+  , generatorBox
+  , generatorAddSpecies
+  ]
+
+generatorParameter = GeneratorParameter <$> parseBlock "Parameters" parameterTerm
+
+parameterTerm = do
+  symbol "Real"
+  ParameterReal <$> lexeme word <*> constant
+
+generatorBox = GeneratorBox <$> parseBlock "Box" boxTerm
+
+boxTerm = choice [boxLength, boxAngles, boxNonPeriodic]
+
+boxLength = do
+  symbol "Lengths"
+  BoxLength <$> constant <*> constant <*> constant
+
+boxAngles = do
+  symbol "Angles"
+  BoxAngles <$> constant <*> constant <*> constant
+
+boxNonPeriodic = do
+  symbol "NonPeriodic"
+  BoxNonPeriodic <$> parseBool
+
+generatorAddSpecies = GeneratorAddSpecies <$> parseBlock "AddSpecies" addSpeciesTerm
+
+addSpeciesTerm = choice [
+  addSpeciesSpecies
+  , addSpeciesPopulation
+  , addSpeciesDensity
+  , addSpeciesRotate
+  , addSpeciesPositioning
+  ]
+
+addSpeciesSpecies = do
+  symbol "Species"
+  AddSpeciesSpecies <$> quoted word
+
+addSpeciesPopulation = do
+  symbol "Population"
+  AddSpeciesPopulation . T.pack<$> quoted (some alphaNumChar)
+
+addSpeciesDensity = do
+  symbol "Density"
+  AddSpeciesDensity <$> quoted word <*> lexeme printable
+
+addSpeciesRotate = do
+  symbol "Rotate"
+  AddSpeciesRotate <$> parseBool
+
+addSpeciesPositioning = do
+  symbol "Positioning"
+  AddSpeciesPositioning <$> lexeme word
+
+
 
 main = do
   info <- readFile "water.txt"
