@@ -14,6 +14,8 @@ data Section = Master [MasterTerm]
   | Species T.Text [SpeciesTerm]
   | PairPotential [PairPotentialTerm]
   | Configuration T.Text [ConfigurationTerm]
+  | Layer T.Text Int [Module]
+  | Simulation Int
   deriving (Show)
 
 data MasterTerm = MasterBond T.Text T.Text Double Double
@@ -72,6 +74,37 @@ data AddSpeciesTerm = AddSpeciesSpecies T.Text
   | AddSpeciesPositioning T.Text
   deriving (Show)
 
+data Module = MolShake T.Text Int T.Text Double Double
+  | MD T.Text Int T.Text
+  | Energy T.Text Int T.Text
+  | RDF T.Text Int T.Text T.Text Double
+  | NeutronSQ T.Text Int T.Text QBroadening (Maybe Exchangeable) [Isotopologue] Reference
+  | EPSR T.Text Int Double [Target]
+  | CalculateRDF T.Text Int T.Text [Site] Bool
+  | CalculateCN T.Text Int T.Text Range
+  | CalculateDAngle T.Text Int T.Text DistanceRange [Site] Bool
+  | CalculateAvgMol T.Text Int T.Text Site
+  | CalculateSDF T.Text Int T.Text [Site]
+  deriving (Show)
+
+data QBroadening = QBroadening T.Text Double
+  deriving Show
+data Exchangeable = Exchangeable T.Text
+  deriving Show
+data Isotopologue = Isotopologue T.Text T.Text T.Text Double
+  deriving Show
+data Reference = Reference T.Text T.Text
+  deriving Show
+data Target = Target T.Text T.Text
+  deriving Show
+data Site = Site T.Text [T.Text]
+  deriving Show
+data Range = Range T.Text Double Double
+  deriving Show
+data DistanceRange = DistanceRange Double Double Double
+  deriving Show
+
+
 sc = L.space space1 (L.skipLineComment "#") empty
 
 symbol = L.symbol sc
@@ -86,28 +119,36 @@ word = T.pack <$> (some $ letterChar <|> char '-')
 printable :: Parser T.Text
 printable = T.pack <$> (some $ alphaNumChar <|> symbolChar <|> punctuationChar)
 
+printableWithSpace :: Parser T.Text
+printableWithSpace = T.pack <$> (some $ alphaNumChar <|> symbolChar <|> punctuationChar <|> char ' ')
+
+quotable :: Parser T.Text
+quotable = T.pack <$> ("'" *> someTill printChar "'")
+
 parser :: Parser [Section]
 parser = some . choice $ [
-  Master <$> parseBlock "Master" masterTerm
-  , uncurry Species <$> parseNamedBlock "Species" speciesTerm
-  , PairPotential <$> parseBlock "PairPotentials" pairPotentialTerm
-  , uncurry Configuration <$> parseNamedBlock "Configuration" configurationTerm
+  Master <$> parseBlock "Master" (some masterTerm)
+  , uncurry Species <$> parseNamedBlock "Species" (some speciesTerm)
+  , PairPotential <$> parseBlock "PairPotentials" (some pairPotentialTerm)
+  , uncurry Configuration <$> parseNamedBlock "Configuration" (some configurationTerm)
+  , layer
+  , Simulation <$> parseBlock "Simulation" (symbol "Seed" *> lexeme (L.signed sc L.decimal))
   ]
 
-parseBlock :: T.Text -> Parser a -> Parser [a]
+parseBlock :: T.Text -> Parser a -> Parser a
 parseBlock name inner= do
   sc
   symbol name
-  result <- some inner
+  result <- inner
   symbol $ "End" <> name
   return result
 
-parseNamedBlock :: T.Text -> Parser a -> Parser (T.Text, [a])
+parseNamedBlock :: T.Text -> Parser a -> Parser (T.Text, a)
 parseNamedBlock name inner= do
   sc
   symbol name
   title <- quoted . lexeme . some $ alphaNumChar
-  result <- some inner
+  result <- inner
   symbol $ "End" <> name
   return (T.pack title, result)
 
@@ -170,7 +211,7 @@ speciesIsotopologue = do
       return $ first <> "=" <> T.pack (show second)
 
 speciesSite = do
-  (name, terms) <- parseNamedBlock "Site" siteTerm
+  (name, terms) <- parseNamedBlock "Site" (some siteTerm)
   return $ SpeciesSite name terms
 
 siteTerm :: Parser SiteTerm
@@ -248,7 +289,7 @@ configurationTemperature = do
   symbol "Temperature"
   ConfigurationTemperature <$> constant
 
-configurationGenerator = ConfigurationGenerator <$> parseBlock "Generator" generatorTerm
+configurationGenerator = ConfigurationGenerator <$> parseBlock "Generator" (some generatorTerm)
 
 generatorTerm = choice [
   generatorParameter
@@ -256,13 +297,13 @@ generatorTerm = choice [
   , generatorAddSpecies
   ]
 
-generatorParameter = GeneratorParameter <$> parseBlock "Parameters" parameterTerm
+generatorParameter = GeneratorParameter <$> parseBlock "Parameters" (some parameterTerm)
 
 parameterTerm = do
   symbol "Real"
   ParameterReal <$> lexeme word <*> constant
 
-generatorBox = GeneratorBox <$> parseBlock "Box" boxTerm
+generatorBox = GeneratorBox <$> parseBlock "Box" (some boxTerm)
 
 boxTerm = choice [boxLength, boxAngles, boxNonPeriodic]
 
@@ -278,7 +319,7 @@ boxNonPeriodic = do
   symbol "NonPeriodic"
   BoxNonPeriodic <$> parseBool
 
-generatorAddSpecies = GeneratorAddSpecies <$> parseBlock "AddSpecies" addSpeciesTerm
+generatorAddSpecies = GeneratorAddSpecies <$> parseBlock "AddSpecies" (some addSpeciesTerm)
 
 addSpeciesTerm = choice [
   addSpeciesSpecies
@@ -308,7 +349,75 @@ addSpeciesPositioning = do
   symbol "Positioning"
   AddSpeciesPositioning <$> lexeme word
 
+layer :: Parser Section
+layer = between (symbol "Layer") (symbol "EndLayer") $
+  Layer <$> lexeme quotable <*> frequency <*> some module_
 
+module_ :: Parser Module
+module_ = between (symbol "Module") (symbol "EndModule") $
+  choice [molshake, md, energy, rdf, neutronsq, epsr, calculateRDF, calculateCN, calculateDAngle, calculateAvgMol, calculateSDF]
+
+frequency :: Parser Int
+frequency = symbol "Frequency" *> parseInt
+
+configuration :: Parser T.Text
+configuration = symbol "Configuration" *> lexeme quotable
+
+molshake :: Parser Module
+molshake = do
+  symbol "MolShake"
+  MolShake <$> lexeme quotable <*> frequency <*> configuration <*> rotationStepSize <*>  translationStepSize
+
+rotationStepSize = symbol "RotationStepSize" *> constant
+translationStepSize = symbol "TranslationStepSize" *> constant
+
+md :: Parser Module
+md = do
+  symbol "MD"
+  MD <$> lexeme quotable <*> frequency <*> configuration
+
+energy :: Parser Module
+energy = do
+  symbol "Energy"
+  Energy <$> lexeme quotable <*> frequency <*> configuration
+
+rdf :: Parser Module
+rdf = symbol "RDF" *> (RDF <$> lexeme quotable <*> frequency <*> configuration <*> (symbol "IntraBroadening" *> lexeme word) <*> constant)
+
+neutronsq :: Parser Module
+neutronsq = do
+  symbol "NeutronSQ"
+  NeutronSQ <$> lexeme quotable <*> frequency <*> configuration <*> qbroadening <*> optional exchangeable <*> some isotopologue <*> reference
+
+qbroadening = do
+  symbol "QBroadening"
+  QBroadening <$> lexeme quotable <*> constant
+exchangeable = symbol "Exchangeable" *> (Exchangeable <$> lexeme word)
+isotopologue = do
+  symbol "Isotopologue"
+  Isotopologue <$> lexeme quotable <*> lexeme quotable <*> lexeme quotable <*> constant
+reference = do
+  symbol "Reference" *> (Reference <$> lexeme word <*> lexeme quotable) <* symbol "EndReference"
+
+epsr = symbol "EPSR" *> (EPSR <$> lexeme quotable <*> frequency <*> (symbol "EReq" *> constant) <*> some target)
+
+target = symbol "Target" *> (Target <$> lexeme quotable <*> lexeme quotable)
+
+calculateRDF = symbol "CalculateRDF" *> (CalculateRDF <$> lexeme quotable <*> frequency <*> configuration <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
+
+site = symbol "Site" *> (Site <$> (T.pack <$> lexeme (many upperChar)) <*> some (lexeme quotable))
+
+calculateCN = symbol "CalculateCN" *> (CalculateCN <$> lexeme quotable <*> frequency <*> (symbol "SourceRDF" *> lexeme quotable) <*> range)
+
+range = symbol "Range" *> (Range <$> (T.pack <$> lexeme (many upperChar)) <*> constant <*> constant)
+
+calculateDAngle = symbol "CalculateDAngle" *> (CalculateDAngle <$> lexeme quotable <*> frequency <*> configuration <*> distanceRange <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
+
+distanceRange = symbol "DistanceRange" *> (DistanceRange <$> constant <*> constant <*> constant)
+
+calculateAvgMol = symbol "CalculateAvgMol" *> (CalculateAvgMol <$> lexeme quotable <*> frequency <*> configuration <*> site)
+
+calculateSDF = symbol "CalculateSDF" *> (CalculateSDF <$> lexeme quotable <*> frequency <*> configuration <*> some site)
 
 main = do
   info <- readFile "water.txt"
