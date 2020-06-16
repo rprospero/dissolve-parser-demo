@@ -41,12 +41,17 @@ data SiteTerm =
   deriving (Show)
 
 data PairPotentialTerm =
-  PairPotentialsParameters T.Text T.Text Double T.Text Double Double Double Double
+  PairPotentialsParameters T.Text T.Text Double PotentialFormula
   | PairPotentialsRange Double
   | PairPotentialsDelta Double
   | PairPotentialsIncludeCoulomb Bool
   | PairPotentialsCoulombTruncation Truncation
   | PairPotentialsShortRangeTruncation Truncation
+  deriving (Show)
+
+data PotentialFormula =
+  LJ [Double]
+  | LJGeometric [Double]
   deriving (Show)
 
 data Truncation = Shifted
@@ -173,15 +178,15 @@ masterTerm = choice [masterBond, masterAngle, masterTorsion]
 
 masterBond = do
   symbol "Bond"
-  MasterBond <$> lexeme quotable <*> lexeme word <*> constant <*> constant
+  MasterBond <$> lexeme printable <*> lexeme word <*> constant <*> constant
 
 masterAngle = do
   symbol "Angle"
-  MasterAngle <$> lexeme quotable <*> lexeme word <*> constant <*> constant
+  MasterAngle <$> lexeme printable <*> lexeme word <*> constant <*> constant
 
 masterTorsion = do
   symbol "Torsion"
-  MasterTorsion <$> lexeme quotable <*> lexeme printable <*> constant <*> constant <*> constant
+  MasterTorsion <$> lexeme printable <*> lexeme printable <*> constant <*> constant <*> constant
 
 speciesTerm :: Parser SpeciesTerm
 speciesTerm = choice [speciesAtom
@@ -198,7 +203,7 @@ quoted p = lexeme $ between "'" "'" p
 speciesAtom :: Parser SpeciesTerm
 speciesAtom = do
   symbol "Atom"
-  Atom <$> lexeme L.decimal <*> lexeme word <*> constant <*> constant <*> constant <*> lexeme quotable <*> constant
+  Atom <$> lexeme L.decimal <*> lexeme word <*> constant <*> constant <*> constant <*> lexeme printable <*> constant
 
 speciesBond :: Parser SpeciesTerm
 speciesBond = do
@@ -218,7 +223,7 @@ speciesTorsion = do
 speciesIsotopologue :: Parser SpeciesTerm
 speciesIsotopologue = do
   symbol "Isotopologue"
-  SpeciesIsotopologue <$> quoted word <*> label
+  SpeciesIsotopologue <$> lexeme printable <*> label
   where
     label = do
       first <- word
@@ -272,7 +277,13 @@ pairPotentialTerm = choice [
 pairPotentialsParameters :: Parser PairPotentialTerm
 pairPotentialsParameters = do
   symbol "Parameters"
-  PairPotentialsParameters <$> lexeme printable <*> lexeme word <*> constant <*> lexeme word <*> constant <*> constant <*> constant <*> constant
+  PairPotentialsParameters <$> lexeme printable <*> lexeme word <*> constant <*> choice [ljGeometric, lj]
+
+lj :: Parser PotentialFormula
+lj = symbol "LJ" *> (LJ <$> (constant `sepBy` sc))
+
+ljGeometric :: Parser PotentialFormula
+ljGeometric = symbol "LJGeometric" *> (LJGeometric <$> (constant `sepBy` sc))
 
 pairPotentialsRange :: Parser PairPotentialTerm
 pairPotentialsRange = do
