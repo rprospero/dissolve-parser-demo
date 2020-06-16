@@ -1,8 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric #-}
 
+import Data.Aeson (ToJSON, encodeFile)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Void
+import GHC.Generics
 import System.Environment
 import Text.Megaparsec
 import Text.Megaparsec.Char
@@ -17,12 +20,16 @@ data Section = Master [MasterTerm]
   | Configuration T.Text [ConfigurationTerm]
   | Layer T.Text Int [Module]
   | Simulation Int
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON Section
 
 data MasterTerm = MasterBond T.Text T.Text Double Double
   | MasterAngle T.Text T.Text Double Double
   | MasterTorsion T.Text T.Text Double Double Double
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON MasterTerm
 
 data SpeciesTerm =
   Atom Int T.Text Double Double Double T.Text Double
@@ -31,14 +38,18 @@ data SpeciesTerm =
   | SpeciesTorsion Int Int Int Int T.Text
   | SpeciesIsotopologue T.Text T.Text
   | SpeciesSite T.Text [SiteTerm]
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON SpeciesTerm
 
 data SiteTerm =
   SiteOrigin [Int]
   | SiteOriginMassWeighted Bool
   | SiteXAxis Int
   | SiteYAxis Int
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON SiteTerm
 
 data PairPotentialTerm =
   PairPotentialsParameters T.Text T.Text Double PotentialFormula
@@ -47,44 +58,62 @@ data PairPotentialTerm =
   | PairPotentialsIncludeCoulomb Bool
   | PairPotentialsCoulombTruncation Truncation
   | PairPotentialsShortRangeTruncation Truncation
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON PairPotentialTerm
 
 data PotentialFormula =
   LJ [Double]
   | LJGeometric [Double]
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON PotentialFormula
 
 data Truncation = Shifted
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON Truncation
 
 data ConfigurationTerm =
   ConfigurationGenerator [GeneratorTerm]
   | ConfigurationTemperature Double
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON ConfigurationTerm
 
 data GeneratorTerm =
   GeneratorParameter [ParameterTerm]
   | GeneratorBox [BoxTerm]
   | GeneratorAddSpecies [AddSpeciesTerm]
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON GeneratorTerm
 
 data ParameterTerm = ParameterReal T.Text Double
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON ParameterTerm
 
 data BoxTerm = BoxLength Double Double Double
   | BoxAngles Double Double Double
   | BoxNonPeriodic Bool
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON BoxTerm
 
 data AddSpeciesTerm = AddSpeciesSpecies T.Text
   | AddSpeciesPopulation T.Text
   | AddSpeciesDensity T.Text T.Text
   | AddSpeciesRotate Bool
   | AddSpeciesPositioning T.Text
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON AddSpeciesTerm
 
 data Module = Module T.Text Int ModuleTerm
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON Module
 
 data ModuleTerm = MolShake T.Text Double Double
   | MD T.Text
@@ -97,24 +126,37 @@ data ModuleTerm = MolShake T.Text Double Double
   | CalculateDAngle T.Text DistanceRange [Site] Bool
   | CalculateAvgMol T.Text Site
   | CalculateSDF T.Text [Site]
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance ToJSON ModuleTerm
 
 data QBroadening = QBroadening T.Text Double
-  deriving Show
+  deriving (Show, Generic)
 data Exchangeable = Exchangeable T.Text
-  deriving Show
+  deriving (Show, Generic)
 data Isotopologue = Isotopologue T.Text T.Text T.Text Double
-  deriving Show
+  deriving (Show, Generic)
 data Reference = Reference T.Text T.Text
-  deriving Show
+  deriving (Show, Generic)
 data Target = Target T.Text T.Text
-  deriving Show
+  deriving (Show, Generic)
 data Site = Site T.Text [T.Text]
-  deriving Show
+  deriving (Show, Generic)
 data Range = Range T.Text Double Double
-  deriving Show
+  deriving (Show, Generic)
 data DistanceRange = DistanceRange Double Double Double
-  deriving Show
+  deriving (Show, Generic)
+
+
+instance ToJSON QBroadening
+instance ToJSON Exchangeable
+instance ToJSON Isotopologue
+instance ToJSON Reference
+instance ToJSON Target
+instance ToJSON Site
+instance ToJSON Range
+instance ToJSON DistanceRange
+
 
 
 sc = L.space space1 (L.skipLineComment "#") empty
@@ -452,4 +494,6 @@ calculateSDF = (CalculateSDF <$> configuration <*> some site)
 main = do
   arg <- getArgs
   info <- readFile $ head arg
-  parseTest parser $ T.pack info
+  case (runParser parser (head arg) $ T.pack info) of
+    Left _ -> print "Error Parsing Dissolve File"
+    Right v -> encodeFile (head arg <> ".json") v
