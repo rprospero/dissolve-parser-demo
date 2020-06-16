@@ -139,8 +139,8 @@ quotable = T.pack <$> ("'" *> someTill printChar "'")
 
 parser :: Parser [Section]
 parser = some . choice $ [
-  Master <$> parseBlock "Master" (some masterTerm)
-  , uncurry Species <$> parseNamedBlock "Species" (some speciesTerm)
+  Master <$> parseBlock "Master" (some masterTerm) <?> "Master Block"
+  , uncurry Species <$> parseNamedBlock "Species" (some speciesTerm) <?> "Species Block"
   , PairPotential <$> parseBlock "PairPotentials" (some pairPotentialTerm)
   , uncurry Configuration <$> parseNamedBlock "Configuration" (some configurationTerm)
   , layer
@@ -159,10 +159,10 @@ parseNamedBlock :: T.Text -> Parser a -> Parser (T.Text, a)
 parseNamedBlock name inner= do
   sc
   symbol name
-  title <- quoted . lexeme . some $ alphaNumChar
+  title <- lexeme quotable
   result <- inner
   symbol $ "End" <> name
-  return (T.pack title, result)
+  return (title, result)
 
 parseBool :: Parser Bool
 parseBool = true <|> false
@@ -233,7 +233,7 @@ speciesIsotopologue = do
       return $ first <> "=" <> T.pack (show second)
 
 speciesSite = do
-  (name, terms) <- parseNamedBlock "Site" (some siteTerm)
+  (name, terms) <- parseNamedBlock "Site" (some siteTerm) <?> "Site Block"
   return $ SpeciesSite name terms
 
 siteTerm :: Parser SiteTerm
