@@ -3,6 +3,7 @@
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Void
+import System.Environment
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.Debug
@@ -419,5 +420,6 @@ calculateAvgMol = (CalculateAvgMol <$> configuration <*> site)
 calculateSDF = (CalculateSDF <$> configuration <*> some site)
 
 main = do
-  info <- readFile "water.txt"
+  arg <- getArgs
+  info <- readFile $ head arg
   parseTest parser $ T.pack info
