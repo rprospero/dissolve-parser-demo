@@ -21,12 +21,14 @@ data Section = Master [MasterTerm]
 
 data MasterTerm = MasterBond T.Text T.Text Double Double
   | MasterAngle T.Text T.Text Double Double
+  | MasterTorsion T.Text T.Text Double Double Double
   deriving (Show)
 
 data SpeciesTerm =
   Atom Int T.Text Double Double Double T.Text Double
   | SpeciesBond Int Int T.Text
   | SpeciesAngle Int Int Int T.Text
+  | SpeciesTorsion Int Int Int Int T.Text
   | SpeciesIsotopologue T.Text T.Text
   | SpeciesSite T.Text [SiteTerm]
   deriving (Show)
@@ -42,6 +44,7 @@ data PairPotentialTerm =
   PairPotentialsParameters T.Text T.Text Double T.Text Double Double Double Double
   | PairPotentialsRange Double
   | PairPotentialsDelta Double
+  | PairPotentialsIncludeCoulomb Bool
   | PairPotentialsCoulombTruncation Truncation
   | PairPotentialsShortRangeTruncation Truncation
   deriving (Show)
@@ -166,20 +169,25 @@ parseInt :: Parser Int
 parseInt = lexeme L.decimal
 
 masterTerm :: Parser MasterTerm
-masterTerm = choice [masterBond, masterAngle]
+masterTerm = choice [masterBond, masterAngle, masterTorsion]
 
 masterBond = do
   symbol "Bond"
-  MasterBond <$> quoted word <*> lexeme word <*> constant <*> constant
+  MasterBond <$> lexeme quotable <*> lexeme word <*> constant <*> constant
 
 masterAngle = do
   symbol "Angle"
-  MasterAngle <$> quoted word <*> lexeme word <*> constant <*> constant
+  MasterAngle <$> lexeme quotable <*> lexeme word <*> constant <*> constant
+
+masterTorsion = do
+  symbol "Torsion"
+  MasterTorsion <$> lexeme quotable <*> lexeme printable <*> constant <*> constant <*> constant
 
 speciesTerm :: Parser SpeciesTerm
 speciesTerm = choice [speciesAtom
                      , speciesBond
                      , speciesAngle
+                     , speciesTorsion
                      , speciesIsotopologue
                      , speciesSite
                      ]
@@ -190,17 +198,22 @@ quoted p = lexeme $ between "'" "'" p
 speciesAtom :: Parser SpeciesTerm
 speciesAtom = do
   symbol "Atom"
-  Atom <$> lexeme L.decimal <*> lexeme word <*> constant <*> constant <*> constant <*> quoted word <*> constant
+  Atom <$> lexeme L.decimal <*> lexeme word <*> constant <*> constant <*> constant <*> lexeme quotable <*> constant
 
 speciesBond :: Parser SpeciesTerm
 speciesBond = do
   symbol "Bond"
-  SpeciesBond <$> lexeme L.decimal <*> lexeme L.decimal <*> lexeme ("@" *> word)
+  SpeciesBond <$> lexeme L.decimal <*> lexeme L.decimal <*> lexeme ("@" *> printable)
 
 speciesAngle :: Parser SpeciesTerm
 speciesAngle = do
   symbol "Angle"
-  SpeciesAngle <$> lexeme L.decimal <*> lexeme L.decimal <*> lexeme L.decimal <*> lexeme ("@" *> word)
+  SpeciesAngle <$> lexeme L.decimal <*> lexeme L.decimal <*> lexeme L.decimal <*> lexeme ("@" *> printable)
+
+speciesTorsion :: Parser SpeciesTerm
+speciesTorsion = do
+  symbol "Torsion"
+  SpeciesTorsion <$> lexeme L.decimal <*> lexeme L.decimal <*> lexeme L.decimal <*> lexeme L.decimal <*> lexeme ("@" *> printable)
 
 speciesIsotopologue :: Parser SpeciesTerm
 speciesIsotopologue = do
@@ -251,6 +264,7 @@ pairPotentialTerm = choice [
   pairPotentialsParameters
   , pairPotentialsRange
   , pairPotentialsDelta
+  , pairPotentialsIncludeCoulomb
   , pairPotentialsCoulombTruncation
   , pairPotentialsShortRangeTruncation
   ]
@@ -258,7 +272,7 @@ pairPotentialTerm = choice [
 pairPotentialsParameters :: Parser PairPotentialTerm
 pairPotentialsParameters = do
   symbol "Parameters"
-  PairPotentialsParameters <$> lexeme word <*> lexeme word <*> constant <*> lexeme word <*> constant <*> constant <*> constant <*> constant
+  PairPotentialsParameters <$> lexeme printable <*> lexeme word <*> constant <*> lexeme word <*> constant <*> constant <*> constant <*> constant
 
 pairPotentialsRange :: Parser PairPotentialTerm
 pairPotentialsRange = do
@@ -269,6 +283,11 @@ pairPotentialsDelta :: Parser PairPotentialTerm
 pairPotentialsDelta = do
   symbol "Delta"
   PairPotentialsDelta <$> constant
+
+pairPotentialsIncludeCoulomb :: Parser PairPotentialTerm
+pairPotentialsIncludeCoulomb = do
+  symbol "IncludeCoulomb"
+  PairPotentialsIncludeCoulomb <$> parseBool
 
 pairPotentialsCoulombTruncation :: Parser PairPotentialTerm
 pairPotentialsCoulombTruncation = do
