@@ -74,17 +74,20 @@ data AddSpeciesTerm = AddSpeciesSpecies T.Text
   | AddSpeciesPositioning T.Text
   deriving (Show)
 
-data Module = MolShake T.Text Int T.Text Double Double
-  | MD T.Text Int T.Text
-  | Energy T.Text Int T.Text
-  | RDF T.Text Int T.Text T.Text Double
-  | NeutronSQ T.Text Int T.Text QBroadening (Maybe Exchangeable) [Isotopologue] Reference
-  | EPSR T.Text Int Double [Target]
-  | CalculateRDF T.Text Int T.Text [Site] Bool
-  | CalculateCN T.Text Int T.Text Range
-  | CalculateDAngle T.Text Int T.Text DistanceRange [Site] Bool
-  | CalculateAvgMol T.Text Int T.Text Site
-  | CalculateSDF T.Text Int T.Text [Site]
+data Module = Module T.Text Int ModuleTerm
+  deriving (Show)
+
+data ModuleTerm = MolShake T.Text Double Double
+  | MD T.Text
+  | Energy T.Text
+  | RDF T.Text T.Text Double
+  | NeutronSQ T.Text QBroadening (Maybe Exchangeable) [Isotopologue] Reference
+  | EPSR Double [Target]
+  | CalculateRDF T.Text [Site] Bool
+  | CalculateCN T.Text Range
+  | CalculateDAngle T.Text DistanceRange [Site] Bool
+  | CalculateAvgMol T.Text Site
+  | CalculateSDF T.Text [Site]
   deriving (Show)
 
 data QBroadening = QBroadening T.Text Double
@@ -354,8 +357,13 @@ layer = between (symbol "Layer") (symbol "EndLayer") $
   Layer <$> lexeme quotable <*> frequency <*> some module_
 
 module_ :: Parser Module
-module_ = between (symbol "Module") (symbol "EndModule") $
-  choice [molshake, md, energy, rdf, neutronsq, epsr, calculateRDF, calculateCN, calculateDAngle, calculateAvgMol, calculateSDF]
+module_ = between (symbol "Module") (symbol "EndModule") . choice . zipWith parseModule moduleNames $ modules
+
+moduleNames = ["MolShake", "MD", "Energy", "RDF", "NeutronSQ", "EPSR", "CalculateRDF", "CalculateCN", "CalculateDAngle", "CalculateAvgMol", "CalculateSDF"]
+modules = [molshake, md, energy, rdf, neutronsq, epsr, calculateRDF, calculateCN, calculateDAngle, calculateAvgMol, calculateSDF]
+
+parseModule :: T.Text -> Parser ModuleTerm -> Parser Module
+parseModule mname parser = symbol mname *> (Module <$> lexeme quotable <*> frequency <*> parser)
 
 frequency :: Parser Int
 frequency = symbol "Frequency" *> parseInt
@@ -363,31 +371,22 @@ frequency = symbol "Frequency" *> parseInt
 configuration :: Parser T.Text
 configuration = symbol "Configuration" *> lexeme quotable
 
-molshake :: Parser Module
 molshake = do
-  symbol "MolShake"
-  MolShake <$> lexeme quotable <*> frequency <*> configuration <*> rotationStepSize <*>  translationStepSize
+  MolShake <$> configuration <*> rotationStepSize <*>  translationStepSize
 
 rotationStepSize = symbol "RotationStepSize" *> constant
 translationStepSize = symbol "TranslationStepSize" *> constant
 
-md :: Parser Module
 md = do
-  symbol "MD"
-  MD <$> lexeme quotable <*> frequency <*> configuration
+  MD <$> configuration
 
-energy :: Parser Module
 energy = do
-  symbol "Energy"
-  Energy <$> lexeme quotable <*> frequency <*> configuration
+  Energy <$> configuration
 
-rdf :: Parser Module
-rdf = symbol "RDF" *> (RDF <$> lexeme quotable <*> frequency <*> configuration <*> (symbol "IntraBroadening" *> lexeme word) <*> constant)
+rdf = (RDF <$> configuration <*> (symbol "IntraBroadening" *> lexeme word) <*> constant)
 
-neutronsq :: Parser Module
 neutronsq = do
-  symbol "NeutronSQ"
-  NeutronSQ <$> lexeme quotable <*> frequency <*> configuration <*> qbroadening <*> optional exchangeable <*> some isotopologue <*> reference
+  NeutronSQ <$> configuration <*> qbroadening <*> optional exchangeable <*> some isotopologue <*> reference
 
 qbroadening = do
   symbol "QBroadening"
@@ -399,25 +398,25 @@ isotopologue = do
 reference = do
   symbol "Reference" *> (Reference <$> lexeme word <*> lexeme quotable) <* symbol "EndReference"
 
-epsr = symbol "EPSR" *> (EPSR <$> lexeme quotable <*> frequency <*> (symbol "EReq" *> constant) <*> some target)
+epsr = EPSR <$> (symbol "EReq" *> constant) <*> some target
 
 target = symbol "Target" *> (Target <$> lexeme quotable <*> lexeme quotable)
 
-calculateRDF = symbol "CalculateRDF" *> (CalculateRDF <$> lexeme quotable <*> frequency <*> configuration <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
+calculateRDF = (CalculateRDF <$> configuration <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
 
 site = symbol "Site" *> (Site <$> (T.pack <$> lexeme (many upperChar)) <*> some (lexeme quotable))
 
-calculateCN = symbol "CalculateCN" *> (CalculateCN <$> lexeme quotable <*> frequency <*> (symbol "SourceRDF" *> lexeme quotable) <*> range)
+calculateCN = (CalculateCN <$> (symbol "SourceRDF" *> lexeme quotable) <*> range)
 
 range = symbol "Range" *> (Range <$> (T.pack <$> lexeme (many upperChar)) <*> constant <*> constant)
 
-calculateDAngle = symbol "CalculateDAngle" *> (CalculateDAngle <$> lexeme quotable <*> frequency <*> configuration <*> distanceRange <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
+calculateDAngle = (CalculateDAngle <$> configuration <*> distanceRange <*> some site <*> (symbol "ExcludeSameMolecule" *> parseBool))
 
 distanceRange = symbol "DistanceRange" *> (DistanceRange <$> constant <*> constant <*> constant)
 
-calculateAvgMol = symbol "CalculateAvgMol" *> (CalculateAvgMol <$> lexeme quotable <*> frequency <*> configuration <*> site)
+calculateAvgMol = (CalculateAvgMol <$> configuration <*> site)
 
-calculateSDF = symbol "CalculateSDF" *> (CalculateSDF <$> lexeme quotable <*> frequency <*> configuration <*> some site)
+calculateSDF = (CalculateSDF <$> configuration <*> some site)
 
 main = do
   info <- readFile "water.txt"
