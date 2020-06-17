@@ -16,6 +16,7 @@ section :
     | pairPotential
     | configuration
     | layer
+    | simulation
 	;
 
 // Master Section
@@ -228,10 +229,14 @@ distanceRange : 'DistanceRange' Num Num Num ;
 calculateAvgMol : 'CalculateAvgMol' WORD frequency configName site ;
 calculateSDF: 'CalculateSDF' WORD frequency configName site+ ;
 
+// Simulation Terms
+
+simulation : 'Simulation' 'Seed' INT 'EndSimulation' ;
+
 
 // Lexer Terms
 
-INT: [0-9]+ ;
+INT: ('-'|'+')?[0-9]+ ;
 
 fragment DIGIT : [0-9] ;
 
