@@ -15,6 +15,7 @@ section :
     | species
     | pairPotential
     | configuration
+    | layer
 	;
 
 // Master Section
@@ -176,6 +177,57 @@ addSpeciesDensity : 'Density' WORD WORD ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' WORD ;
 
+// Layer Terms
+
+layer : 'Layer'
+        QUOTE
+        frequency
+        module+
+        'EndLayer'
+    ;
+
+frequency : 'Frequency' INT ;
+configName : 'Configuration' WORD ;
+
+module : 'Module' moduleTerm 'EndModule' ;
+
+moduleTerm : molShake | mD | energy | rDF | neutronSQ | ePSR | calculateRDF | calculateCN | calculateDAngle | calculateAvgMol | calculateSDF ;
+
+molShake : 'MolShake' WORD frequency configName rotationStepSize translationStepSize ;
+rotationStepSize : 'RotationStepSize' Num ;
+translationStepSize : 'TranslationStepSize' Num ;
+
+mD : 'MD' WORD frequency configName ;
+energy : 'Energy' WORD frequency configName ;
+
+rDF : 'RDF' WORD frequency configName intraBroadening Num ;
+intraBroadening : 'IntraBroadening' WORD ;
+
+neutronSQ : 'NeutronSQ' WORD frequency configName qbroadening exchangeable? isotopologue+ reference ;
+qbroadening : 'QBroadening' WORD Num ;
+exchangeable : 'Exchangeable' WORD ;
+isotopologue : 'Isotopologue' WORD WORD WORD Num ;
+reference : 'Reference' WORD WORD 'EndReference' ;
+
+
+ePSR : 'EPSR' WORD frequency ereq target+;
+ereq : 'EReq' Num ;
+target : 'Target' WORD WORD;
+
+calculateRDF : 'CalculateRDF' WORD frequency configName site+ excludeSameMolecule ;
+site : ('SiteA' | 'SiteB' | 'SiteC' | 'Site') WORD WORD+ ;
+
+calculateCN : 'CalculateCN' WORD frequency sourceRDF range ;
+sourceRDF : 'SourceRDF' WORD ;
+range : ('RangeA' | 'RangeB') Num Num ;
+
+calculateDAngle : 'CalculateDAngle' WORD frequency configName distanceRange site+ excludeSameMolecule ;
+excludeSameMolecule : 'ExcludeSameMolecule' boolean ;
+distanceRange : 'DistanceRange' Num Num Num ;
+
+calculateAvgMol : 'CalculateAvgMol' WORD frequency configName site ;
+calculateSDF: 'CalculateSDF' WORD frequency configName site+ ;
+
 
 // Lexer Terms
 
@@ -192,3 +244,5 @@ Comment: '#'('-'*)~[\r\n]* -> skip ;
 boolean : 'True' | 'False' ;
 
 Num : DIGIT+ ('.' DIGIT+)? ;
+
+QUOTE: '\''~('\'')+'\'';
