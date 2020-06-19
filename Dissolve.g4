@@ -29,24 +29,15 @@ master :
 masterTerm :
 	   masterBond
 	   | masterAngle
+	   | masterTorsion
 	   ;
 
 
-masterBond :
-	   'Bond'
-	   WORD
-	   WORD
-	   Num
-	   Num
-	   ;
+masterBond : 'Bond' WORD WORD Num Num ;
 
-masterAngle :
-	    'Angle'
-	    WORD
-	    WORD
-	    Num
-	    Num
-	    ;
+masterAngle : 'Angle' WORD WORD Num Num ;
+
+masterTorsion : 'Torsion' WORD WORD Num Num Num ;
 
 // Species Terms
 species :
