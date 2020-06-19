@@ -241,14 +241,18 @@ COMMENT: '#' ~('\r' | '\n')* -> skip ;
 Space:  [ \t\r\n]+ -> skip;
 
 
-INT: ('-'|'+')?[0-9]+ ;
+fragment SIGNED : ('-'|'+')?;
 
-fragment DIGIT : [0-9] ;
+fragment DIGITS : [0-9]+;
+
+fragment EXPONENT: ('e' | 'E') SIGNED DIGITS ;
+
+Num : SIGNED DIGITS '.' (DIGITS (EXPONENT)? )?;
+
+INT: SIGNED DIGITS ;
 
 WORD: ~(' ' | '\r' | '\n')+ ;
 
 boolean : 'True' | 'False' ;
-
-Num : DIGIT+ ('.' DIGIT+)? ;
 
 QUOTE: '\''~('\'')+'\'';
