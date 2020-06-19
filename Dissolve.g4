@@ -236,15 +236,16 @@ simulation : 'Simulation' 'Seed' INT 'EndSimulation' ;
 
 // Lexer Terms
 
+COMMENT: '#' ~('\r' | '\n')* -> skip ;
+
+Space:  [ \t\r\n]+ -> skip;
+
+
 INT: ('-'|'+')?[0-9]+ ;
 
 fragment DIGIT : [0-9] ;
 
 WORD: ~(' ' | '\r' | '\n')+ ;
-
-Space:  (' ' | '\t' | '\r' | '\n')+ -> skip;
-
-Comment: '#'('-'*)~[\r\n]* -> skip ;
 
 boolean : 'True' | 'False' ;
 
