@@ -30,9 +30,10 @@ antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted (DissolveParser::SiteOrigin
   else {
     std::cout << "De-activate Site Origin Mass Weighting" << std:: endl;
   }
+  return true;
 }
 
 
 antlrcpp::Any MyVisitor::visitBoolean(DissolveParser::BooleanContext *context) {
-  return context->truthy();
+  return context->truthy() != nullptr;
 }
