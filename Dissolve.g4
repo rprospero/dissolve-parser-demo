@@ -258,5 +258,7 @@ WORD: ~(' ' | '\r' | '\n')+ ;
 
 str : REF | QUOTE | WORD ;
 
-boolean : 'True' | 'False' ;
+boolean : truthy | falsy ;
+truthy : 'True' | 'On' ;
+falsy : 'False' | 'Off' ;
 
