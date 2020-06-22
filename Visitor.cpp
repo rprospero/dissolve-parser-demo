@@ -37,3 +37,13 @@ antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted (DissolveParser::SiteOrigin
 antlrcpp::Any MyVisitor::visitBoolean(DissolveParser::BooleanContext *context) {
   return context->truthy() != nullptr;
 }
+
+antlrcpp::Any MyVisitor::visitStr(DissolveParser::StrContext *context) {
+  if (context->REF()) {
+    return context->REF()->getText();
+  }
+  if (context->QUOTE()) {
+    return context->QUOTE()->getText();
+  }
+  return context->WORD()->getText();
+}
