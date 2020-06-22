@@ -242,8 +242,13 @@ Num : SIGNED DIGITS '.' (DIGITS (EXPONENT)? )?;
 
 INT: SIGNED DIGITS ;
 
+QUOTE: '\''~('\'')+'\'';
+
+REF: '@' WORD;
+
 WORD: ~(' ' | '\r' | '\n')+ ;
+
+str : REF | QUOTE | WORD ;
 
 boolean : 'True' | 'False' ;
 
-QUOTE: '\''~('\'')+'\'';
