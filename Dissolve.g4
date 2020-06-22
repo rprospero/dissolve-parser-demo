@@ -33,9 +33,9 @@ masterTerm :
 	   ;
 
 
-masterBond : 'Bond' str str Num Num ;
+masterBond : 'Bond' str bondKind ;
 
-masterAngle : 'Angle' str str Num Num ;
+masterAngle : 'Angle' str bondKind ;
 
 masterTorsion : 'Torsion' str torsionKind ;
 
@@ -57,12 +57,13 @@ speciesTerm :
     ;
 
 speciesAtom : 'Atom' INT str Num Num Num str Num;
-speciesBond : 'Bond' INT INT str;
-speciesAngle : 'Angle' INT INT INT str;
+speciesBond : 'Bond' INT INT bondKind;
+speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
 speciesIsotopologue : 'Isotopologue' str str;
 speciesSite : 'Site' str siteTerm+ 'EndSite' ;
 
+bondKind : 'Harmonic' Num Num | REF ;
 torsionKind : REF | 'Cos3' Num Num Num ;
 
 
