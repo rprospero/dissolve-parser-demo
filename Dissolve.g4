@@ -174,7 +174,9 @@ addSpeciesPopulation : 'Population' INT ;
 addSpeciesDensity : 'Density' (Num | str) str ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' str ;
-addSpeciesBoxAction : 'BoxAction' 'None' ;
+addSpeciesBoxAction : 'BoxAction' boxAction ;
+
+boxAction : 'None' | 'ScaleVolume' ;
 
 // Layer Terms
 
