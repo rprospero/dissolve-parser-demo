@@ -230,7 +230,7 @@ distanceRange : 'DistanceRange' Num Num Num ;
 
 calculateAvgMol : 'CalculateAvgMol' str frequency configName site ;
 calculateSDF: 'CalculateSDF' str frequency configName site+ ;
-benchmark: 'Benchmark' str configName ;
+benchmark: 'Benchmark' str? configName ;
 
 // Simulation Terms
 
