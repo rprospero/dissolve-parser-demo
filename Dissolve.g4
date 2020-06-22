@@ -171,7 +171,7 @@ addSpeciesTerm :
 
 addSpeciesSpecies : 'Species' str ;
 addSpeciesPopulation : 'Population' INT ;
-addSpeciesDensity : 'Density' str str ;
+addSpeciesDensity : 'Density' (Num | str) str ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' str ;
 addSpeciesBoxAction : 'BoxAction' 'None' ;
