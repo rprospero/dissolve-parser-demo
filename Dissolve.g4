@@ -61,7 +61,7 @@ speciesAtom : 'Atom' INT str Num Num Num str Num;
 speciesBond : 'Bond' INT INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
-speciesIsotopologue : 'Isotopologue' str str;
+speciesIsotopologue : 'Isotopologue' str str*;
 speciesSite : 'Site' str siteTerm+ 'EndSite' ;
 speciesForcefield : 'Forcefield' str ;
 
