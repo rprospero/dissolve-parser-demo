@@ -2,11 +2,25 @@
 
 class MyVisitor : public DissolveBaseVisitor {
 public:
-  antlrcpp::Any visitProgram(DissolveParser::ProgramContext *context) override;
+  antlrcpp::Any visitSpecies(DissolveParser::SpeciesContext *context) override;
 
-  antlrcpp::Any visitSection(DissolveParser::SectionContext *context) override;
+  antlrcpp::Any visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) override;
+
+  antlrcpp::Any visitSpeciesBond(DissolveParser::SpeciesBondContext *context) override;
+
+  antlrcpp::Any visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) override;
+
+  antlrcpp::Any visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) override;
+
+  antlrcpp::Any visitSpeciesIsotopologue(DissolveParser::SpeciesIsotopologueContext *context) override;
+
+  antlrcpp::Any visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) override;
+
+  antlrcpp::Any visitSpeciesForcefield(DissolveParser::SpeciesForcefieldContext *context) override;
 
   antlrcpp::Any visitSiteOriginMassWeighted(DissolveParser::SiteOriginMassWeightedContext *context) override;
+
+  antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;
 };

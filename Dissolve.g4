@@ -42,7 +42,7 @@ masterTorsion : 'Torsion' str torsionKind ;
 // Species Terms
 species :
        'Species'
-       str
+       name=str
        speciesTerm+
        'EndSpecies'
        ;
@@ -57,8 +57,8 @@ speciesTerm :
     | speciesForcefield
     ;
 
-speciesAtom : 'Atom' INT str num num num str num?;
-speciesBond : 'Bond' INT INT bondKind;
+speciesAtom : 'Atom' index=INT element=str num num num str num?;
+speciesBond : 'Bond' left=INT right=INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
 speciesIsotopologue : 'Isotopologue' str str*;
