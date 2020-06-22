@@ -57,7 +57,7 @@ speciesTerm :
     | speciesForcefield
     ;
 
-speciesAtom : 'Atom' INT str Num Num Num str Num;
+speciesAtom : 'Atom' INT str num num num str num?;
 speciesBond : 'Bond' INT INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
@@ -65,8 +65,8 @@ speciesIsotopologue : 'Isotopologue' str str*;
 speciesSite : 'Site' str siteTerm+ 'EndSite' ;
 speciesForcefield : 'Forcefield' str ;
 
-bondKind : 'Harmonic' Num Num | REF ;
-torsionKind : REF | 'Cos3' Num Num Num ;
+bondKind : 'Harmonic' num num | REF ;
+torsionKind : REF | 'Cos3' num num num ;
 
 
 siteTerm : siteOriginMassWeighted
@@ -97,14 +97,14 @@ pairPotentialTerm :
   | pairPotentialsShortRangeTruncation
     ;
 
-pairPotentialsParameters : 'Parameters' str str Num pp ;
+pairPotentialsParameters : 'Parameters' str str num pp ;
 
 pp : ljGeometric | lj ;
-lj : 'LJ' Num+ ;
-ljGeometric : 'LJGeometric' Num+ ;
+lj : 'LJ' num+ ;
+ljGeometric : 'LJGeometric' num+ ;
 
-pairPotentialsRange : 'Range' Num;
-pairPotentialsDelta : 'Delta' Num;
+pairPotentialsRange : 'Range' num;
+pairPotentialsDelta : 'Delta' num;
 pairPotentialsIncludeCoulomb : 'IncludeCoulomb' boolean;
 pairPotentialsCoulombTruncation : 'CoulombTruncation' truncation;
 pairPotentialsShortRangeTruncation : 'ShortRangeTruncation' truncation;
@@ -124,7 +124,7 @@ configurationTerm :
     | configurationTemperature
     ;
 
-configurationTemperature : 'Temperature' Num;
+configurationTemperature : 'Temperature' num;
 
 configurationGenerator :
         'Generator'
@@ -140,7 +140,7 @@ generatorParameter :
         'EndParameters'
     ;
 
-parameterTerm : 'Real' str Num;
+parameterTerm : 'Real' str num;
 
 generatorBox :
         'Box'
@@ -150,8 +150,8 @@ generatorBox :
 
 boxTerm : boxLength | boxAngles | boxNonPeriodic ;
 
-boxLength : 'Lengths' Num Num Num ;
-boxAngles : 'Angles' Num Num Num ;
+boxLength : 'Lengths' num num num ;
+boxAngles : 'Angles' num num num ;
 boxNonPeriodic : 'NonPeriodic' boolean ;
 
 generatorAddSpecies :
@@ -171,7 +171,7 @@ addSpeciesTerm :
 
 addSpeciesSpecies : 'Species' str ;
 addSpeciesPopulation : 'Population' INT ;
-addSpeciesDensity : 'Density' (Num | str) str ;
+addSpeciesDensity : 'Density' (num | str) str ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' str ;
 addSpeciesBoxAction : 'BoxAction' boxAction ;
@@ -197,24 +197,24 @@ moduleTerm : molShake | mD | energy | rDF | neutronSQ | ePSR | calculateRDF
 	   | benchmark;
 
 molShake : 'MolShake' str frequency configName rotationStepSize translationStepSize ;
-rotationStepSize : 'RotationStepSize' Num ;
-translationStepSize : 'TranslationStepSize' Num ;
+rotationStepSize : 'RotationStepSize' num ;
+translationStepSize : 'TranslationStepSize' num ;
 
 mD : 'MD' str frequency configName ;
 energy : 'Energy' str frequency configName ;
 
-rDF : 'RDF' str frequency configName intraBroadening Num ;
+rDF : 'RDF' str frequency configName intraBroadening num ;
 intraBroadening : 'IntraBroadening' str ;
 
 neutronSQ : 'NeutronSQ' str frequency configName qbroadening exchangeable? isotopologue+ reference ;
-qbroadening : 'QBroadening' str Num ;
+qbroadening : 'QBroadening' str num ;
 exchangeable : 'Exchangeable' str ;
-isotopologue : 'Isotopologue' str str str Num ;
+isotopologue : 'Isotopologue' str str str num ;
 reference : 'Reference' str str 'EndReference' ;
 
 
 ePSR : 'EPSR' str frequency ereq target+;
-ereq : 'EReq' Num ;
+ereq : 'EReq' num ;
 target : 'Target' str str;
 
 calculateRDF : 'CalculateRDF' str frequency configName site+ excludeSameMolecule ;
@@ -222,11 +222,11 @@ site : ('SiteA' | 'SiteB' | 'SiteC' | 'Site') str str+ ;
 
 calculateCN : 'CalculateCN' str frequency sourceRDF range ;
 sourceRDF : 'SourceRDF' str ;
-range : ('RangeA' | 'RangeB') Num Num ;
+range : ('RangeA' | 'RangeB') num num ;
 
 calculateDAngle : 'CalculateDAngle' str frequency configName distanceRange site+ excludeSameMolecule ;
 excludeSameMolecule : 'ExcludeSameMolecule' boolean ;
-distanceRange : 'DistanceRange' Num Num Num ;
+distanceRange : 'DistanceRange' num num num ;
 
 calculateAvgMol : 'CalculateAvgMol' str frequency configName site ;
 calculateSDF: 'CalculateSDF' str frequency configName site+ ;
@@ -261,6 +261,7 @@ REF: '@' WORD;
 WORD: ~(' ' | '\r' | '\n')+ ;
 
 str : REF | QUOTE | WORD ;
+num : Num | INT ;
 
 boolean : truthy | falsy ;
 truthy : 'True' | 'On' ;
