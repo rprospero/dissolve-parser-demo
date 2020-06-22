@@ -182,7 +182,7 @@ boxAction : 'None' | 'ScaleVolume' ;
 
 layer : 'Layer'
         QUOTE
-        frequency
+        frequency?
         module+
         'EndLayer'
     ;
