@@ -166,7 +166,7 @@ addSpeciesTerm :
     ;
 
 addSpeciesSpecies : 'Species' str ;
-addSpeciesPopulation : 'Population' str ;
+addSpeciesPopulation : 'Population' INT ;
 addSpeciesDensity : 'Density' str str ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' str ;
