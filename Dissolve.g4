@@ -33,16 +33,16 @@ masterTerm :
 	   ;
 
 
-masterBond : 'Bond' WORD WORD Num Num ;
+masterBond : 'Bond' str str Num Num ;
 
-masterAngle : 'Angle' WORD WORD Num Num ;
+masterAngle : 'Angle' str str Num Num ;
 
-masterTorsion : 'Torsion' WORD WORD Num Num Num ;
+masterTorsion : 'Torsion' str torsionKind ;
 
 // Species Terms
 species :
        'Species'
-       WORD
+       str
        speciesTerm+
        'EndSpecies'
        ;
@@ -56,12 +56,14 @@ speciesTerm :
     | speciesSite
     ;
 
-speciesAtom : 'Atom' INT WORD Num Num Num WORD Num;
-speciesBond : 'Bond' INT INT WORD;
-speciesAngle : 'Angle' INT INT INT WORD;
-speciesTorsion : 'Torsion' INT INT INT INT WORD;
-speciesIsotopologue : 'Isotopologue' WORD WORD;
-speciesSite : 'Site' WORD siteTerm+ 'EndSite' ;
+speciesAtom : 'Atom' INT str Num Num Num str Num;
+speciesBond : 'Bond' INT INT str;
+speciesAngle : 'Angle' INT INT INT str;
+speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
+speciesIsotopologue : 'Isotopologue' str str;
+speciesSite : 'Site' str siteTerm+ 'EndSite' ;
+
+torsionKind : REF | 'Cos3' Num Num Num ;
 
 
 siteTerm : siteOriginMassWeighted
@@ -92,7 +94,7 @@ pairPotentialTerm :
   | pairPotentialsShortRangeTruncation
     ;
 
-pairPotentialsParameters : 'Parameters' WORD WORD Num pp ;
+pairPotentialsParameters : 'Parameters' str str Num pp ;
 
 pp : ljGeometric | lj ;
 lj : 'LJ' Num+ ;
@@ -109,7 +111,7 @@ truncation : 'Shifted' ;
 // Configuration Section
 configuration :
        'Configuration'
-        WORD
+        str
        configurationTerm+
        'EndConfiguration'
        ;
@@ -135,7 +137,7 @@ generatorParameter :
         'EndParameters'
     ;
 
-parameterTerm : 'Real' WORD Num;
+parameterTerm : 'Real' str Num;
 
 generatorBox :
         'Box'
@@ -163,11 +165,11 @@ addSpeciesTerm :
   | addSpeciesPositioning
     ;
 
-addSpeciesSpecies : 'Species' WORD ;
-addSpeciesPopulation : 'Population' WORD ;
-addSpeciesDensity : 'Density' WORD WORD ;
+addSpeciesSpecies : 'Species' str ;
+addSpeciesPopulation : 'Population' str ;
+addSpeciesDensity : 'Density' str str ;
 addSpeciesRotate : 'Rotate' boolean ;
-addSpeciesPositioning : 'Positioning' WORD ;
+addSpeciesPositioning : 'Positioning' str ;
 
 // Layer Terms
 
@@ -179,46 +181,49 @@ layer : 'Layer'
     ;
 
 frequency : 'Frequency' INT ;
-configName : 'Configuration' WORD ;
+configName : 'Configuration' str ;
 
 module : 'Module' moduleTerm 'EndModule' ;
 
-moduleTerm : molShake | mD | energy | rDF | neutronSQ | ePSR | calculateRDF | calculateCN | calculateDAngle | calculateAvgMol | calculateSDF ;
+moduleTerm : molShake | mD | energy | rDF | neutronSQ | ePSR | calculateRDF
+	   | calculateCN | calculateDAngle | calculateAvgMol | calculateSDF
+	   | benchmark;
 
-molShake : 'MolShake' WORD frequency configName rotationStepSize translationStepSize ;
+molShake : 'MolShake' str frequency configName rotationStepSize translationStepSize ;
 rotationStepSize : 'RotationStepSize' Num ;
 translationStepSize : 'TranslationStepSize' Num ;
 
-mD : 'MD' WORD frequency configName ;
-energy : 'Energy' WORD frequency configName ;
+mD : 'MD' str frequency configName ;
+energy : 'Energy' str frequency configName ;
 
-rDF : 'RDF' WORD frequency configName intraBroadening Num ;
-intraBroadening : 'IntraBroadening' WORD ;
+rDF : 'RDF' str frequency configName intraBroadening Num ;
+intraBroadening : 'IntraBroadening' str ;
 
-neutronSQ : 'NeutronSQ' WORD frequency configName qbroadening exchangeable? isotopologue+ reference ;
-qbroadening : 'QBroadening' WORD Num ;
-exchangeable : 'Exchangeable' WORD ;
-isotopologue : 'Isotopologue' WORD WORD WORD Num ;
-reference : 'Reference' WORD WORD 'EndReference' ;
+neutronSQ : 'NeutronSQ' str frequency configName qbroadening exchangeable? isotopologue+ reference ;
+qbroadening : 'QBroadening' str Num ;
+exchangeable : 'Exchangeable' str ;
+isotopologue : 'Isotopologue' str str str Num ;
+reference : 'Reference' str str 'EndReference' ;
 
 
-ePSR : 'EPSR' WORD frequency ereq target+;
+ePSR : 'EPSR' str frequency ereq target+;
 ereq : 'EReq' Num ;
-target : 'Target' WORD WORD;
+target : 'Target' str str;
 
-calculateRDF : 'CalculateRDF' WORD frequency configName site+ excludeSameMolecule ;
-site : ('SiteA' | 'SiteB' | 'SiteC' | 'Site') WORD WORD+ ;
+calculateRDF : 'CalculateRDF' str frequency configName site+ excludeSameMolecule ;
+site : ('SiteA' | 'SiteB' | 'SiteC' | 'Site') str str+ ;
 
-calculateCN : 'CalculateCN' WORD frequency sourceRDF range ;
-sourceRDF : 'SourceRDF' WORD ;
+calculateCN : 'CalculateCN' str frequency sourceRDF range ;
+sourceRDF : 'SourceRDF' str ;
 range : ('RangeA' | 'RangeB') Num Num ;
 
-calculateDAngle : 'CalculateDAngle' WORD frequency configName distanceRange site+ excludeSameMolecule ;
+calculateDAngle : 'CalculateDAngle' str frequency configName distanceRange site+ excludeSameMolecule ;
 excludeSameMolecule : 'ExcludeSameMolecule' boolean ;
 distanceRange : 'DistanceRange' Num Num Num ;
 
-calculateAvgMol : 'CalculateAvgMol' WORD frequency configName site ;
-calculateSDF: 'CalculateSDF' WORD frequency configName site+ ;
+calculateAvgMol : 'CalculateAvgMol' str frequency configName site ;
+calculateSDF: 'CalculateSDF' str frequency configName site+ ;
+benchmark: 'Benchmark' str configName ;
 
 // Simulation Terms
 
