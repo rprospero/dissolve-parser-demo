@@ -166,6 +166,7 @@ addSpeciesTerm :
   | addSpeciesDensity
   | addSpeciesRotate
   | addSpeciesPositioning
+  | addSpeciesBoxAction
     ;
 
 addSpeciesSpecies : 'Species' str ;
@@ -173,6 +174,7 @@ addSpeciesPopulation : 'Population' INT ;
 addSpeciesDensity : 'Density' str str ;
 addSpeciesRotate : 'Rotate' boolean ;
 addSpeciesPositioning : 'Positioning' str ;
+addSpeciesBoxAction : 'BoxAction' 'None' ;
 
 // Layer Terms
 
