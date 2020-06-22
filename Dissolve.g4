@@ -250,7 +250,7 @@ fragment EXPONENT: ('e' | 'E') SIGNED DIGITS ;
 
 Num : SIGNED DIGITS '.' (DIGITS (EXPONENT)? )?;
 
-INT: SIGNED DIGITS ;
+INT: '\'' SIGNED DIGITS '\'' | SIGNED DIGITS ;
 
 QUOTE: '\''~('\'')+'\'';
 
