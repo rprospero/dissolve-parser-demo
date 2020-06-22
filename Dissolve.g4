@@ -54,6 +54,7 @@ speciesTerm :
     | speciesTorsion
     | speciesIsotopologue
     | speciesSite
+    | speciesForcefield
     ;
 
 speciesAtom : 'Atom' INT str Num Num Num str Num;
@@ -62,6 +63,7 @@ speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
 speciesIsotopologue : 'Isotopologue' str str;
 speciesSite : 'Site' str siteTerm+ 'EndSite' ;
+speciesForcefield : 'Forcefield' str ;
 
 bondKind : 'Harmonic' Num Num | REF ;
 torsionKind : REF | 'Cos3' Num Num Num ;
