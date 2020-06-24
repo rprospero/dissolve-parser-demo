@@ -5,16 +5,16 @@ LINK = -L/nix/store/2hk6ifgb99sjkgli9843s4n3g7y52m55-antlr-runtime-cpp-4.7.2/lib
 OBJ = .o
 GRAMMAR = Dissolve
 
+PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ) Visitor$(OBJ)
+
+all: cpp_parser.o $(PARSE_OBJ)
+	g++ $(LINK) $(PARSE_OBJ) cpp_parser.o
+
 $(GRAMMAR)Lexer.cpp : $(GRAMMAR).g4
 	antlr -Dlanguage=Cpp -visitor $(GRAMMAR).g4
 
 %.o: %.cpp
 	g++ -c -o $@ $< $(INCLUDE)
-
-PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ) Visitor$(OBJ)
-
-all: cpp_parser.o $(PARSE_OBJ)
-	g++ $(LINK) $(PARSE_OBJ) cpp_parser.o
 
 clean:
 	rm -rf $(PARSE_OBJ) cpp_parser.o
