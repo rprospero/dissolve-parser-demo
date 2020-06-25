@@ -9,7 +9,6 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Atom> atoms;
   std::vector<Bond> bonds;
   std::string name = visit(context->name);
-  std::cout << "Species " << name << std::endl;
 
   auto terms = context->speciesTerm();
 
