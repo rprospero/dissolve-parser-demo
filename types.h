@@ -6,7 +6,7 @@
 
 using Atom = int;
 using Bond = std::tuple<int, int>;
-using NullTerm = bool;
+using NullTerm = std::tuple<double, double>;
 
 class Species {
 public:
@@ -18,6 +18,7 @@ public:
     out << "Species " << s.name_ << std::endl;
     for (auto atom : s.atoms_) {out << " Atom " << atom << std::endl;}
     for (auto bond : s.bonds_) {out << " Bond " << std::get<0>(bond) << " " << std::get<1>(bond) << std::endl;}
+    return out;
   }
 };
 
