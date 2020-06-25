@@ -1,3 +1,4 @@
+#include "types.h"
 #include "Visitor.h"
 #include <iostream>
 #include <tuple>
@@ -5,40 +6,49 @@
 
 
 antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
+  std::vector<Atom> atoms;
+  std::vector<Bond> bonds;
   std::string name = visit(context->name);
   std::cout << "Species " << name << std::endl;
 
   auto terms = context->speciesTerm();
 
   for (auto &term : terms) {
-    std::tuple<int, int> temp = visit(term);
-    std::cout << "(" << std::get<0>(temp) << "," << std::get<1>(temp) << ")" << std::endl;
+    SpeciesTerm temp = visit(term);
+    if (std::holds_alternative<Atom>(temp))
+      atoms.push_back(std::get<Atom>(temp));
+    else if (std::holds_alternative<Bond>(temp))
+      bonds.push_back(std::get<Bond>(temp));
   }
 
-  return true;
+  Species result(name, atoms, bonds);
+
+  std::cout << result << std::endl;
+
+  return result;
 }
 
 
 antlrcpp::Any MyVisitor::visitSpeciesAtom (DissolveParser::SpeciesAtomContext *context) {
     int index = std::stoi(context->index->getText());
     std::string element = visit(context->element);
-    std::cout << "Atom\t" << element << "\t"<< index << std::endl;
-    return std::make_tuple(-1, index);
+    SpeciesTerm result = index;
+    return result;
 }
 
 antlrcpp::Any MyVisitor::visitSpeciesBond (DissolveParser::SpeciesBondContext *context) {
     int left = std::stoi(context->left->getText());
     int right = std::stoi(context->right->getText());
     // auto bond = visit(context->bondKind());
-    std::cout << "Bond from " << left << " to " << right << std::endl;
-    return std::make_tuple(left, right);
+    SpeciesTerm result = std::make_tuple(left, right);
+    return result;
 }
 
-antlrcpp::Any MyVisitor::visitSpeciesAngle (DissolveParser::SpeciesAngleContext *context) {return std::make_tuple(-1, -1);}
-antlrcpp::Any MyVisitor::visitSpeciesTorsion (DissolveParser::SpeciesTorsionContext *context) {return std::make_tuple(-1, -1);}
-antlrcpp::Any MyVisitor::visitSpeciesIsotopologue (DissolveParser::SpeciesIsotopologueContext *context) {return std::make_tuple(-1, -1);}
-antlrcpp::Any MyVisitor::visitSpeciesSite (DissolveParser::SpeciesSiteContext *context) {return std::make_tuple(-1, -1);}
-antlrcpp::Any MyVisitor::visitSpeciesForcefield (DissolveParser::SpeciesForcefieldContext *context) {return std::make_tuple(-1, -1);}
+antlrcpp::Any MyVisitor::visitSpeciesAngle (DissolveParser::SpeciesAngleContext *context) {SpeciesTerm result = false; return result;}
+antlrcpp::Any MyVisitor::visitSpeciesTorsion (DissolveParser::SpeciesTorsionContext *context) {SpeciesTerm result = false; return result;}
+antlrcpp::Any MyVisitor::visitSpeciesIsotopologue (DissolveParser::SpeciesIsotopologueContext *context) {SpeciesTerm result = false; return result;}
+antlrcpp::Any MyVisitor::visitSpeciesSite (DissolveParser::SpeciesSiteContext *context) {SpeciesTerm result = false; return result;}
+antlrcpp::Any MyVisitor::visitSpeciesForcefield (DissolveParser::SpeciesForcefieldContext *context) {SpeciesTerm result = false; return result;}
 
 antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted (DissolveParser::SiteOriginMassWeightedContext *context) {
   bool activate = visitChildren(context);
