@@ -57,7 +57,8 @@ speciesTerm :
     | speciesForcefield
     ;
 
-speciesAtom : 'Atom' index=INT element=str vec3 str num?;
+speciesAtom : 'Atom' index=INT element=str vec3 atomtype=str charge=num?;
+
 speciesBond : 'Bond' left=INT right=INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;

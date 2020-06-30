@@ -15,9 +15,11 @@ struct Vec3 {
 struct Atom {
   int index;
   Vec3 position;
-  // std::string element_;
+  std::string element, type;
+  std::optional<double> charge;
   friend std::ostream& operator<<(std::ostream& out, const Atom& atom) {
-    out << "Atom " << atom.index << " " << atom.position;
+    out << "Atom " << atom.element << " " << atom.index << " " << atom.position << " " << atom.type;
+    if (atom.charge) out << " " << *atom.charge;
     return out;
   }
 };

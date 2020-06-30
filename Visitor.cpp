@@ -34,9 +34,12 @@ MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
   atom.index = std::stoi(context->index->getText());
   atom.position = visit(context->vec3());
   std::string element = visit(context->element);
-  // atom.element_ = element;
-  SpeciesTerm result = atom;
-  return result;
+  atom.element = element;
+  std::string type = visit(context->atomtype);
+  atom.type = type;
+  if (context->charge)
+    atom.charge = visit(context->charge);
+  return atom;
 }
 
 antlrcpp::Any
