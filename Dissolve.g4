@@ -57,7 +57,7 @@ speciesTerm :
     | speciesForcefield
     ;
 
-speciesAtom : 'Atom' index=INT element=str num num num str num?;
+speciesAtom : 'Atom' index=INT element=str vec3 str num?;
 speciesBond : 'Bond' left=INT right=INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
@@ -66,7 +66,7 @@ speciesSite : 'Site' str siteTerm+ 'EndSite' ;
 speciesForcefield : 'Forcefield' str ;
 
 bondKind : 'Harmonic' num num | REF ;
-torsionKind : REF | 'Cos3' num num num ;
+torsionKind : REF | 'Cos3' vec3 ;
 
 
 siteTerm : siteOriginMassWeighted
@@ -150,8 +150,8 @@ generatorBox :
 
 boxTerm : boxLength | boxAngles | boxNonPeriodic ;
 
-boxLength : 'Lengths' num num num ;
-boxAngles : 'Angles' num num num ;
+boxLength : 'Lengths' vec3 ;
+boxAngles : 'Angles' vec3 ;
 boxNonPeriodic : 'NonPeriodic' boolean ;
 
 generatorAddSpecies :
@@ -226,7 +226,7 @@ range : ('RangeA' | 'RangeB') num num ;
 
 calculateDAngle : 'CalculateDAngle' str frequency configName distanceRange site+ excludeSameMolecule ;
 excludeSameMolecule : 'ExcludeSameMolecule' boolean ;
-distanceRange : 'DistanceRange' num num num ;
+distanceRange : 'DistanceRange' vec3 ;
 
 calculateAvgMol : 'CalculateAvgMol' str frequency configName site ;
 calculateSDF: 'CalculateSDF' str frequency configName site+ ;
@@ -262,6 +262,7 @@ WORD: ~(' ' | '\r' | '\n')+ ;
 
 str : REF | QUOTE | WORD ;
 num : Num | INT ;
+vec3 : x=num y=num z=num ;
 
 boolean : truthy | falsy ;
 truthy : 'True' | 'On' ;

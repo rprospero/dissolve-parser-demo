@@ -4,12 +4,20 @@
 #include <variant>
 #include <vector>
 
+struct Vec3 {
+  double x, y, z;
+  friend std::ostream& operator<<(std::ostream& out, const Vec3& vec) {
+    out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
+    return out;
+  }
+};
+
 struct Atom {
   int index;
-  double x, y, z;
+  Vec3 position;
   // std::string element_;
   friend std::ostream& operator<<(std::ostream& out, const Atom& atom) {
-    out << "Atom " << atom.index << " " << atom.x << " " << atom.y << " " << atom.z;
+    out << "Atom " << atom.index << " " << atom.position;
     return out;
   }
 };

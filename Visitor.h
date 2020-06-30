@@ -24,5 +24,7 @@ public:
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;
 
+  antlrcpp::Any visitVec3(DissolveParser::Vec3Context *context) override;
+
   antlrcpp::Any visitNum(DissolveParser::NumContext *context) override;
 };

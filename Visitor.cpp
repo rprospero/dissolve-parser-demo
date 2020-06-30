@@ -31,9 +31,7 @@ antlrcpp::Any
 MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
   Atom atom;
   atom.index = std::stoi(context->index->getText());
-  atom.x = visit(context->num(0));
-  atom.y = visit(context->num(1));
-  atom.z = visit(context->num(2));
+  atom.position = visit(context->vec3());
   std::string element = visit(context->element);
   // atom.element_ = element;
   SpeciesTerm result = atom;
@@ -98,6 +96,14 @@ antlrcpp::Any MyVisitor::visitStr(DissolveParser::StrContext *context) {
     return context->QUOTE()->getText();
   }
   return context->WORD()->getText();
+}
+
+antlrcpp::Any MyVisitor::visitVec3(DissolveParser::Vec3Context *context) {
+  Vec3 result;
+  result.x = visit(context->x);
+  result.y = visit(context->y);
+  result.z = visit(context->z);
+  return result;
 }
 
 antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
