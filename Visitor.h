@@ -23,4 +23,6 @@ public:
   antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;
+
+  antlrcpp::Any visitNum(DissolveParser::NumContext *context) override;
 };

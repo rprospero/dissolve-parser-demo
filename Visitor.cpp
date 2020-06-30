@@ -1,9 +1,9 @@
-#include "types.h"
 #include "Visitor.h"
+#include "types.h"
 #include <iostream>
+#include <memory>
 #include <tuple>
 #include <vector>
-
 
 antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Atom> atoms;
@@ -27,39 +27,62 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   return result;
 }
 
-
-antlrcpp::Any MyVisitor::visitSpeciesAtom (DissolveParser::SpeciesAtomContext *context) {
-    int index = std::stoi(context->index->getText());
-    std::string element = visit(context->element);
-    SpeciesTerm result = index;
-    return result;
+antlrcpp::Any
+MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
+  Atom atom;
+  atom.index = std::stoi(context->index->getText());
+  atom.x = visit(context->num(0));
+  std::string element = visit(context->element);
+  // atom.element_ = element;
+  SpeciesTerm result = atom;
+  return result;
 }
 
-antlrcpp::Any MyVisitor::visitSpeciesBond (DissolveParser::SpeciesBondContext *context) {
-    int left = std::stoi(context->left->getText());
-    int right = std::stoi(context->right->getText());
-    // auto bond = visit(context->bondKind());
-    SpeciesTerm result = std::make_tuple(left, right);
-    return result;
+antlrcpp::Any
+MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
+  int left = std::stoi(context->left->getText());
+  int right = std::stoi(context->right->getText());
+  // auto bond = visit(context->bondKind());
+  SpeciesTerm result = std::make_tuple(left, right);
+  return result;
 }
 
-antlrcpp::Any MyVisitor::visitSpeciesAngle (DissolveParser::SpeciesAngleContext *context) {SpeciesTerm result = std::make_tuple(-1.5, 0.4); return result;}
-antlrcpp::Any MyVisitor::visitSpeciesTorsion (DissolveParser::SpeciesTorsionContext *context) {SpeciesTerm result = std::make_tuple(-1.5, 0.4); return result;}
-antlrcpp::Any MyVisitor::visitSpeciesIsotopologue (DissolveParser::SpeciesIsotopologueContext *context) {SpeciesTerm result = std::make_tuple(-1.5, 0.4); return result;}
-antlrcpp::Any MyVisitor::visitSpeciesSite (DissolveParser::SpeciesSiteContext *context) {SpeciesTerm result = std::make_tuple(-1.5, 0.4); return result;}
-antlrcpp::Any MyVisitor::visitSpeciesForcefield (DissolveParser::SpeciesForcefieldContext *context) {SpeciesTerm result = std::make_tuple(-1.5, 0.4); return result;}
+antlrcpp::Any
+MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
+  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  return result;
+}
+antlrcpp::Any
+MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
+  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  return result;
+}
+antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
+    DissolveParser::SpeciesIsotopologueContext *context) {
+  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  return result;
+}
+antlrcpp::Any
+MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
+  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  return result;
+}
+antlrcpp::Any MyVisitor::visitSpeciesForcefield(
+    DissolveParser::SpeciesForcefieldContext *context) {
+  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  return result;
+}
 
-antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted (DissolveParser::SiteOriginMassWeightedContext *context) {
+antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted(
+    DissolveParser::SiteOriginMassWeightedContext *context) {
   bool activate = visitChildren(context);
-  if(activate) {
-    std::cout << "Activate Site Origin Mass Weighting" << std:: endl;
-  }
-  else {
-    std::cout << "De-activate Site Origin Mass Weighting" << std:: endl;
+  if (activate) {
+    std::cout << "Activate Site Origin Mass Weighting" << std::endl;
+  } else {
+    std::cout << "De-activate Site Origin Mass Weighting" << std::endl;
   }
   return true;
 }
-
 
 antlrcpp::Any MyVisitor::visitBoolean(DissolveParser::BooleanContext *context) {
   return context->truthy() != nullptr;
@@ -73,4 +96,13 @@ antlrcpp::Any MyVisitor::visitStr(DissolveParser::StrContext *context) {
     return context->QUOTE()->getText();
   }
   return context->WORD()->getText();
+}
+
+antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
+  if (context->Num()) {
+    double n = std::stof(context->Num()->getText());
+    return n;
+  }
+  double n = std::stof(context->INT()->getText());
+  return n;
 }

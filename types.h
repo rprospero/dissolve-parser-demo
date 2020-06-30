@@ -4,9 +4,20 @@
 #include <variant>
 #include <vector>
 
-using Atom = int;
+struct Atom {
+  int index;
+  double x;
+  // std::string element_;
+  friend std::ostream& operator<<(std::ostream& out, const Atom& atom) {
+    out << "Atom " << atom.index << " " << atom.x;
+    return out;
+  }
+};
+
+// using Atom = int;
 using Bond = std::tuple<int, int>;
 using NullTerm = std::tuple<double, double>;
+using SpeciesTerm = std::variant<Atom, Bond, NullTerm>;
 
 class Species {
 public:
@@ -16,10 +27,8 @@ public:
   std::vector<Bond> bonds_;
   friend std::ostream& operator<<(std::ostream& out, const Species& s) {
     out << "Species " << s.name_ << std::endl;
-    for (auto atom : s.atoms_) {out << " Atom " << atom << std::endl;}
-    for (auto bond : s.bonds_) {out << " Bond " << std::get<0>(bond) << " " << std::get<1>(bond) << std::endl;}
+    for (auto atom : s.atoms_) {out << atom << std::endl;}
+    for (auto bond : s.bonds_) {out << "Bond " << std::get<0>(bond) << " " << std::get<1>(bond) << std::endl;}
     return out;
   }
 };
-
-using SpeciesTerm = std::variant<Atom, Bond, NullTerm>;
