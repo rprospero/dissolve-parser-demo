@@ -8,6 +8,7 @@
 antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Atom> atoms;
   std::vector<Bond> bonds;
+  std::vector<Angle> angles;
   std::string name = visit(context->name);
 
   auto terms = context->speciesTerm();
@@ -19,9 +20,11 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
     SpeciesTerm temp = visit(term);
     if (std::holds_alternative<Bond>(temp))
       bonds.push_back(std::get<Bond>(temp));
+    else if (std::holds_alternative<Angle>(temp))
+      angles.push_back(std::get<Angle>(temp));
   }
 
-  Species result(name, atoms, bonds);
+  Species result(name, atoms, bonds, angles);
 
   std::cout << result << std::endl;
 
@@ -54,7 +57,12 @@ MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
 
 antlrcpp::Any
 MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
-  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  Angle angle;
+  angle.a = std::stoi(context->INT(0)->getText());
+  angle.b = std::stoi(context->INT(1)->getText());
+  angle.c = std::stoi(context->INT(2)->getText());
+  // auto angle = visit(context->angleKind());
+  SpeciesTerm result = angle;
   return result;
 }
 antlrcpp::Any
