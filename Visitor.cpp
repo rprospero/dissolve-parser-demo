@@ -11,9 +11,9 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Angle> angles;
   std::vector<Torsion> torsions;
   std::vector<Isotopologue> isotopologues;
+  std::vector<Site> sites;
+  std::vector<Forcefield> forcefields;
   std::string name = visit(context->name);
-
-  auto terms = context->speciesTerm();
 
   for (auto &at : context->speciesAtom())
     atoms.push_back(visit(at));
@@ -23,10 +23,15 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
     angles.push_back(visit(angle));
   for (auto &torsion : context->speciesTorsion())
     torsions.push_back(visit(torsion));
-  // for (auto &isotopologue : context->speciesIsotopologue())
-  //   isotopologues.push_back(visit(isotopologue));
+  for (auto &isotopologue : context->speciesIsotopologue())
+    isotopologues.push_back(visit(isotopologue));
+  for (auto &site : context->speciesSite())
+    sites.push_back(visit(site));
+  for (auto &forcefield : context->speciesForcefield())
+    forcefields.push_back(visit(forcefield));
 
-  Species result(name, atoms, bonds, angles, torsions, isotopologues);
+  Species result(name, atoms, bonds, angles, torsions, isotopologues, sites,
+		 forcefields);
 
   std::cout << result << std::endl;
 
@@ -79,18 +84,22 @@ antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
     DissolveParser::SpeciesIsotopologueContext *context) {
   Isotopologue iso;
   iso.name = context->name->getText();
-  for (auto v = context->str().begin(); v != context->str().end(); ++v)
-    iso.values.push_back(visit(*v));
+  std::cout << iso.name << std::endl;
+  // for (auto v = context->str().begin(); v != context->str().end(); ++v)
+  //   iso.values.push_back(visit(*v));
+  std::cout << iso << std::endl;
   return iso;
 }
 antlrcpp::Any
 MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
-  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  Site result;
+  result.name = context->name->getText();
   return result;
 }
 antlrcpp::Any MyVisitor::visitSpeciesForcefield(
     DissolveParser::SpeciesForcefieldContext *context) {
-  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
+  Forcefield result;
+  result.name = context->name->getText();
   return result;
 }
 

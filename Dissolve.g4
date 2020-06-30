@@ -48,14 +48,10 @@ species :
        speciesAngle*
        speciesTorsion*
        speciesIsotopologue*
-       speciesTerm*
+       speciesSite*
+       speciesForcefield*
        'EndSpecies'
        ;
-
-speciesTerm :
-    speciesSite
-    | speciesForcefield
-    ;
 
 speciesAtom : 'Atom' index=INT element=str vec3 atomtype=str charge=num?;
 speciesBond : 'Bond' left=INT right=INT bondKind;
@@ -63,8 +59,8 @@ speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
 speciesIsotopologue : 'Isotopologue' name=str kinds=str*;
 
-speciesSite : 'Site' str siteTerm+ 'EndSite' ;
-speciesForcefield : 'Forcefield' str ;
+speciesSite : 'Site' name=str siteTerm+ 'EndSite' ;
+speciesForcefield : 'Forcefield' name=str ;
 
 bondKind : 'Harmonic' num num | REF ;
 torsionKind : REF | 'Cos3' vec3 ;
