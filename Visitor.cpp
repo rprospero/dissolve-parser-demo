@@ -44,10 +44,11 @@ MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
 
 antlrcpp::Any
 MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
-  int left = std::stoi(context->left->getText());
-  int right = std::stoi(context->right->getText());
+  Bond bond;
+  bond.i = std::stoi(context->left->getText());
+  bond.j = std::stoi(context->right->getText());
   // auto bond = visit(context->bondKind());
-  SpeciesTerm result = std::make_tuple(left, right);
+  SpeciesTerm result = bond;
   return result;
 }
 

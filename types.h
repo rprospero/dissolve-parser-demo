@@ -24,8 +24,15 @@ struct Atom {
   }
 };
 
+struct Bond {
+  int i, j;
+  friend std::ostream& operator<<(std::ostream& out, const Bond& bond) {
+    out << "Bond " << bond.i << " " << bond.j;
+    return out;
+  }
+};
+
 // using Atom = int;
-using Bond = std::tuple<int, int>;
 using NullTerm = std::tuple<double, double>;
 using SpeciesTerm = std::variant<Bond, NullTerm>;
 
@@ -38,7 +45,7 @@ public:
   friend std::ostream& operator<<(std::ostream& out, const Species& s) {
     out << "Species " << s.name_ << std::endl;
     for (auto atom : s.atoms_) {out << atom << std::endl;}
-    for (auto bond : s.bonds_) {out << "Bond " << std::get<0>(bond) << " " << std::get<1>(bond) << std::endl;}
+    for (auto bond : s.bonds_) {out << bond << std::endl;}
     return out;
   }
 };
