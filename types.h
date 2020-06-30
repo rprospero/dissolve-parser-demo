@@ -25,7 +25,7 @@ struct Atom {
 // using Atom = int;
 using Bond = std::tuple<int, int>;
 using NullTerm = std::tuple<double, double>;
-using SpeciesTerm = std::variant<Atom, Bond, NullTerm>;
+using SpeciesTerm = std::variant<Bond, NullTerm>;
 
 class Species {
 public:

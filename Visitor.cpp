@@ -12,11 +12,12 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
 
   auto terms = context->speciesTerm();
 
+  for (auto &at : context->speciesAtom())
+    atoms.push_back(visit(at));
+
   for (auto &term : terms) {
     SpeciesTerm temp = visit(term);
-    if (std::holds_alternative<Atom>(temp))
-      atoms.push_back(std::get<Atom>(temp));
-    else if (std::holds_alternative<Bond>(temp))
+    if (std::holds_alternative<Bond>(temp))
       bonds.push_back(std::get<Bond>(temp));
   }
 
