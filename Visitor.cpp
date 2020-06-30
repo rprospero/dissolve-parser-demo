@@ -32,6 +32,8 @@ MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
   Atom atom;
   atom.index = std::stoi(context->index->getText());
   atom.x = visit(context->num(0));
+  atom.y = visit(context->num(1));
+  atom.z = visit(context->num(2));
   std::string element = visit(context->element);
   // atom.element_ = element;
   SpeciesTerm result = atom;

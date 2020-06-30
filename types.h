@@ -6,10 +6,10 @@
 
 struct Atom {
   int index;
-  double x;
+  double x, y, z;
   // std::string element_;
   friend std::ostream& operator<<(std::ostream& out, const Atom& atom) {
-    out << "Atom " << atom.index << " " << atom.x;
+    out << "Atom " << atom.index << " " << atom.x << " " << atom.y << " " << atom.z;
     return out;
   }
 };
