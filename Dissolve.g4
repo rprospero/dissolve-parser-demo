@@ -44,13 +44,13 @@ species :
        'Species'
        name=str
        speciesAtom+
-       speciesTerm+
+       speciesBond*
+       speciesTerm*
        'EndSpecies'
        ;
 
 speciesTerm :
-    speciesBond
-    | speciesAngle
+    speciesAngle
     | speciesTorsion
     | speciesIsotopologue
     | speciesSite
@@ -58,8 +58,8 @@ speciesTerm :
     ;
 
 speciesAtom : 'Atom' index=INT element=str vec3 atomtype=str charge=num?;
-
 speciesBond : 'Bond' left=INT right=INT bondKind;
+
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
 speciesIsotopologue : 'Isotopologue' str str*;

@@ -15,12 +15,12 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
 
   for (auto &at : context->speciesAtom())
     atoms.push_back(visit(at));
+  for (auto &bond : context->speciesBond())
+    bonds.push_back(visit(bond));
 
   for (auto &term : terms) {
     SpeciesTerm temp = visit(term);
-    if (std::holds_alternative<Bond>(temp))
-      bonds.push_back(std::get<Bond>(temp));
-    else if (std::holds_alternative<Angle>(temp))
+    if (std::holds_alternative<Angle>(temp))
       angles.push_back(std::get<Angle>(temp));
   }
 
@@ -51,8 +51,7 @@ MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
   bond.i = std::stoi(context->left->getText());
   bond.j = std::stoi(context->right->getText());
   // auto bond = visit(context->bondKind());
-  SpeciesTerm result = bond;
-  return result;
+  return bond;
 }
 
 antlrcpp::Any
