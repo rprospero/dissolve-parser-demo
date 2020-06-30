@@ -14,6 +14,9 @@ all: cpp_parser.o $(PARSE_OBJ)
 $(GRAMMAR)Lexer.cpp : $(GRAMMAR).g4
 	antlr -Dlanguage=Cpp -visitor $(GRAMMAR).g4
 
+Visitor.o: Visitor.cpp types.h
+	$(CC) -c -o $@ $< $(INCLUDE)
+
 %.o: %.cpp
 	$(CC) -c -o $@ $< $(INCLUDE)
 

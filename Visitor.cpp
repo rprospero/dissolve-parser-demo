@@ -9,6 +9,8 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Atom> atoms;
   std::vector<Bond> bonds;
   std::vector<Angle> angles;
+  std::vector<Torsion> torsions;
+  std::vector<Isotopologue> isotopologues;
   std::string name = visit(context->name);
 
   auto terms = context->speciesTerm();
@@ -17,14 +19,14 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
     atoms.push_back(visit(at));
   for (auto &bond : context->speciesBond())
     bonds.push_back(visit(bond));
+  for (auto &angle : context->speciesAngle())
+    angles.push_back(visit(angle));
+  for (auto &torsion : context->speciesTorsion())
+    torsions.push_back(visit(torsion));
+  // for (auto &isotopologue : context->speciesIsotopologue())
+  //   isotopologues.push_back(visit(isotopologue));
 
-  for (auto &term : terms) {
-    SpeciesTerm temp = visit(term);
-    if (std::holds_alternative<Angle>(temp))
-      angles.push_back(std::get<Angle>(temp));
-  }
-
-  Species result(name, atoms, bonds, angles);
+  Species result(name, atoms, bonds, angles, torsions, isotopologues);
 
   std::cout << result << std::endl;
 
@@ -61,18 +63,25 @@ MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
   angle.b = std::stoi(context->INT(1)->getText());
   angle.c = std::stoi(context->INT(2)->getText());
   // auto angle = visit(context->angleKind());
-  SpeciesTerm result = angle;
-  return result;
+  return angle;
 }
 antlrcpp::Any
 MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
-  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
-  return result;
+  Torsion torsion;
+  torsion.a = std::stoi(context->INT(0)->getText());
+  torsion.b = std::stoi(context->INT(1)->getText());
+  torsion.c = std::stoi(context->INT(2)->getText());
+  torsion.d = std::stoi(context->INT(3)->getText());
+  // auto torsion = visit(context->torsionKind());
+  return torsion;
 }
 antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
     DissolveParser::SpeciesIsotopologueContext *context) {
-  SpeciesTerm result = std::make_tuple(-1.5, 0.4);
-  return result;
+  Isotopologue iso;
+  iso.name = context->name->getText();
+  for (auto v = context->str().begin(); v != context->str().end(); ++v)
+    iso.values.push_back(visit(*v));
+  return iso;
 }
 antlrcpp::Any
 MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {

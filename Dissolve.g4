@@ -45,24 +45,24 @@ species :
        name=str
        speciesAtom+
        speciesBond*
+       speciesAngle*
+       speciesTorsion*
+       speciesIsotopologue*
        speciesTerm*
        'EndSpecies'
        ;
 
 speciesTerm :
-    speciesAngle
-    | speciesTorsion
-    | speciesIsotopologue
-    | speciesSite
+    speciesSite
     | speciesForcefield
     ;
 
 speciesAtom : 'Atom' index=INT element=str vec3 atomtype=str charge=num?;
 speciesBond : 'Bond' left=INT right=INT bondKind;
-
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT torsionKind;
-speciesIsotopologue : 'Isotopologue' str str*;
+speciesIsotopologue : 'Isotopologue' name=str kinds=str*;
+
 speciesSite : 'Site' str siteTerm+ 'EndSite' ;
 speciesForcefield : 'Forcefield' str ;
 
