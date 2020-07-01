@@ -4,6 +4,8 @@
 #include <variant>
 #include <vector>
 
+using BondKind = std::string;
+
 struct Vec3 {
   double x, y, z;
   friend std::ostream& operator<<(std::ostream& out, const Vec3& vec) {
@@ -26,24 +28,27 @@ struct Atom {
 
 struct Bond {
   int i, j;
+  BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Bond& bond) {
-    out << "Bond " << bond.i << " " << bond.j;
+    out << "Bond " << bond.tag << " "<< bond.i << " " << bond.j;
     return out;
   }
 };
 
 struct Angle {
   int a, b, c;
+  BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Angle& angle) {
-    out << "Angle " << angle.a << " " << angle.b << " " << angle.c;
+    out << "Angle " << angle.tag << " " << angle.a << " " << angle.b << " " << angle.c;
     return out;
   }
 };
 
 struct Torsion {
   int a, b, c, d;
+  BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Torsion& torsion) {
-    out << "Torsion " << torsion.a << " " << torsion.b << " " << torsion.c << " " << torsion.d;
+    out << "Torsion " << torsion.tag << " " << torsion.a << " " << torsion.b << " " << torsion.c << " " << torsion.d;
     return out;
   }
 };

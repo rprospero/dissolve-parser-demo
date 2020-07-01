@@ -57,7 +57,7 @@ MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
   Bond bond;
   bond.i = std::stoi(context->left->getText());
   bond.j = std::stoi(context->right->getText());
-  // auto bond = visit(context->bondKind());
+  bond.tag = visit(context->bondKind()).as<BondKind>();
   return bond;
 }
 
@@ -67,7 +67,7 @@ MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
   angle.a = std::stoi(context->INT(0)->getText());
   angle.b = std::stoi(context->INT(1)->getText());
   angle.c = std::stoi(context->INT(2)->getText());
-  // auto angle = visit(context->angleKind());
+  angle.tag = visit(context->bondKind()).as<BondKind>();
   return angle;
 }
 antlrcpp::Any
@@ -77,7 +77,7 @@ MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
   torsion.b = std::stoi(context->INT(1)->getText());
   torsion.c = std::stoi(context->INT(2)->getText());
   torsion.d = std::stoi(context->INT(3)->getText());
-  // auto torsion = visit(context->torsionKind());
+  torsion.tag = visit(context->bondKind()).as<BondKind>();
   return torsion;
 }
 antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
@@ -94,11 +94,10 @@ MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   result.name = context->name->getText();
   return result;
 }
-antlrcpp::Any MyVisitor::visitSpeciesForcefield(
-    DissolveParser::SpeciesForcefieldContext *context) {
-  Forcefield result;
-  result.name = context->name->getText();
-  return result;
+
+antlrcpp::Any
+MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
+  return context->getText();
 }
 
 antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted(

@@ -18,6 +18,8 @@ public:
 
   antlrcpp::Any visitSpeciesForcefield(DissolveParser::SpeciesForcefieldContext *context) override;
 
+  antlrcpp::Any visitBondKind(DissolveParser::BondKindContext *context) override;
+
   antlrcpp::Any visitSiteOriginMassWeighted(DissolveParser::SiteOriginMassWeightedContext *context) override;
 
   antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
