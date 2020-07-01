@@ -85,16 +85,39 @@ antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
   Isotopologue iso;
   iso.name = context->name->getText();
   for (auto kind : context->ISO()) {
-    std::cout << kind->getText() << std::endl;
     iso.kind.push_back(kind->getText());
   }
   return iso;
 }
+
 antlrcpp::Any
 MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   Site result;
   result.name = context->name->getText();
+  result.massWeighted = false;
+  result.xaxis = 0;
+  result.yaxis = 0;
+
+  if (context->siteOriginMassWeighted() != nullptr) {
+    result.massWeighted = visit(context->siteOriginMassWeighted()).as<bool>();
+    result.xaxis = visit(context->siteXAxis()).as<int>();
+    result.yaxis = visit(context->siteYAxis()).as<int>();
+  }
+  // result.origins = visit(context->siteOrigin());
+  // for (auto ctx : context->siteTerm()) {
+  //   SiteTerm term = visit(ctx)
+  // }
   return result;
+}
+
+antlrcpp::Any
+MyVisitor::visitSiteXAxis(DissolveParser::SiteXAxisContext *context) {
+  return std::stoi(context->INT()->getText());
+}
+
+antlrcpp::Any
+MyVisitor::visitSiteYAxis(DissolveParser::SiteYAxisContext *context) {
+  return std::stoi(context->INT()->getText());
 }
 
 antlrcpp::Any
@@ -104,13 +127,9 @@ MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
 
 antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted(
     DissolveParser::SiteOriginMassWeightedContext *context) {
-  bool activate = visitChildren(context);
-  if (activate) {
-    std::cout << "Activate Site Origin Mass Weighting" << std::endl;
-  } else {
-    std::cout << "De-activate Site Origin Mass Weighting" << std::endl;
-  }
-  return true;
+  if (context == nullptr)
+    return false;
+  return visitChildren(context);
 }
 
 antlrcpp::Any MyVisitor::visitSpeciesForcefield(

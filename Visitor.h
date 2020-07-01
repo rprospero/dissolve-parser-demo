@@ -22,6 +22,10 @@ public:
 
   antlrcpp::Any visitSiteOriginMassWeighted(DissolveParser::SiteOriginMassWeightedContext *context) override;
 
+  antlrcpp::Any visitSiteXAxis(DissolveParser::SiteXAxisContext *context) override;
+
+  antlrcpp::Any visitSiteYAxis(DissolveParser::SiteYAxisContext *context) override;
+
   antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;

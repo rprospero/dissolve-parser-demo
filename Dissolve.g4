@@ -59,7 +59,7 @@ speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT bondKind;
 speciesIsotopologue : 'Isotopologue' name=str kinds=ISO*;
 
-speciesSite : 'Site' name=str siteTerm+ 'EndSite' ;
+speciesSite : 'Site' name=str siteOrigin (siteOriginMassWeighted siteXAxis siteYAxis)? 'EndSite' ;
 speciesForcefield : 'Forcefield' name=str ;
 
 bondKind : 'Harmonic' num num | REF | 'Cos3' vec3 ;

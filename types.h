@@ -66,8 +66,17 @@ struct Isotopologue {
 
 struct Site {
   std::string name;
+  std::vector<int> origins;
+  bool massWeighted;
+  int xaxis;
+  int yaxis;
   friend std::ostream& operator<<(std::ostream& out, const Site& site) {
-    out << "Site" << site.name;
+    out << "Site " << site.name;
+    out << " Origin";
+    for (auto org : site.origins) out << " " << org;
+    out << " Mass Weighted " << site.massWeighted;
+    out << " xaxis " << site.xaxis;
+    out << " yaxis " << site.yaxis;
     return out;
   }
 };
