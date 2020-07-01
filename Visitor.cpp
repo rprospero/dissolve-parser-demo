@@ -112,6 +112,13 @@ antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted(
   return true;
 }
 
+antlrcpp::Any MyVisitor::visitSpeciesForcefield(
+    DissolveParser::SpeciesForcefieldContext *context) {
+  Forcefield result;
+  result.name = context->name->getText();
+  return result;
+}
+
 antlrcpp::Any MyVisitor::visitBoolean(DissolveParser::BooleanContext *context) {
   return context->truthy() != nullptr;
 }
