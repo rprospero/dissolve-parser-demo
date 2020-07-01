@@ -94,6 +94,7 @@ antlrcpp::Any
 MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   Site result;
   result.name = context->name->getText();
+  result.origins = visit(context->siteOrigin()).as<std::vector<int>>();
   result.massWeighted = false;
   result.xaxis = 0;
   result.yaxis = 0;
@@ -109,7 +110,6 @@ MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   // }
   return result;
 }
-
 antlrcpp::Any
 MyVisitor::visitSiteXAxis(DissolveParser::SiteXAxisContext *context) {
   return std::stoi(context->INT()->getText());
@@ -121,15 +121,17 @@ MyVisitor::visitSiteYAxis(DissolveParser::SiteYAxisContext *context) {
 }
 
 antlrcpp::Any
-MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
-  return context->getText();
+MyVisitor::visitSiteOrigin(DissolveParser::SiteOriginContext *context) {
+  std::vector<int> result;
+  for (auto ctx : context->INT()) {
+    result.push_back(std::stoi(ctx->getText()));
+  }
+  return result;
 }
 
-antlrcpp::Any MyVisitor::visitSiteOriginMassWeighted(
-    DissolveParser::SiteOriginMassWeightedContext *context) {
-  if (context == nullptr)
-    return false;
-  return visitChildren(context);
+antlrcpp::Any
+MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
+  return context->getText();
 }
 
 antlrcpp::Any MyVisitor::visitSpeciesForcefield(

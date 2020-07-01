@@ -20,7 +20,7 @@ public:
 
   antlrcpp::Any visitBondKind(DissolveParser::BondKindContext *context) override;
 
-  antlrcpp::Any visitSiteOriginMassWeighted(DissolveParser::SiteOriginMassWeightedContext *context) override;
+  antlrcpp::Any visitSiteOrigin(DissolveParser::SiteOriginContext *context) override;
 
   antlrcpp::Any visitSiteXAxis(DissolveParser::SiteXAxisContext *context) override;
 
