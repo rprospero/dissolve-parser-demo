@@ -55,10 +55,11 @@ struct Torsion {
 
 struct Isotopologue {
   std::string name;
-  std::vector<std::string> values;
+  std::vector<std::string> kind;
   friend std::ostream& operator<<(std::ostream& out, const Isotopologue& isotopologue) {
-    out << "Isotopologue " << isotopologue.name << " ";
-    for (auto value : isotopologue.values) out << value << " ";
+    out << "Isotopologue " << isotopologue.name;
+    for (auto k : isotopologue.kind)
+      out << " " << k;
     return out;
   }
 };

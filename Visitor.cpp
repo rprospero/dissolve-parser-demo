@@ -84,8 +84,10 @@ antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
     DissolveParser::SpeciesIsotopologueContext *context) {
   Isotopologue iso;
   iso.name = context->name->getText();
-  // for (auto v = context->str().begin(); v != context->str().end(); ++v)
-  //   iso.values.push_back(visit(*v));
+  for (auto kind : context->ISO()) {
+    std::cout << kind->getText() << std::endl;
+    iso.kind.push_back(kind->getText());
+  }
   return iso;
 }
 antlrcpp::Any

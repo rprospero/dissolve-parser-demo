@@ -57,7 +57,7 @@ speciesAtom : 'Atom' index=INT element=str vec3 atomtype=str charge=num?;
 speciesBond : 'Bond' left=INT right=INT bondKind;
 speciesAngle : 'Angle' INT INT INT bondKind;
 speciesTorsion : 'Torsion' INT INT INT INT bondKind;
-speciesIsotopologue : 'Isotopologue' name=str kinds=str*;
+speciesIsotopologue : 'Isotopologue' name=str kinds=ISO*;
 
 speciesSite : 'Site' name=str siteTerm+ 'EndSite' ;
 speciesForcefield : 'Forcefield' name=str ;
@@ -253,6 +253,8 @@ INT: '\'' SIGNED DIGITS '\'' | SIGNED DIGITS ;
 QUOTE: '\''~('\'')+'\'';
 
 REF: '@' WORD;
+
+ISO: [A-Z]+ '=' DIGITS;
 
 WORD: ~(' ' | '\r' | '\n')+ ;
 
