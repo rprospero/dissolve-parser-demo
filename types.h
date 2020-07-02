@@ -7,11 +7,17 @@
 #include <variant>
 #include <vector>
 
-using BondKind = std::string;
-
 struct Vec3 {
   double x, y, z;
   friend std::ostream& operator<<(std::ostream& out, const Vec3& vec);
+};
+
+struct BondKind {
+  // enum BondType { Harmonic, Cos3 };
+  // BondType type;
+  int type;
+  Vec3 vec;
+  friend std::ostream& operator<<(std::ostream& out, const BondKind& bond);
 };
 
 struct Atom {
