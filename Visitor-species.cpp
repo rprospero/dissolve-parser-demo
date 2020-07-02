@@ -136,14 +136,13 @@ MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
   }
   BondKind b;
   if (context->vec3()) {
-    b.type = 0; // BondKind::BondType::Cos3;
+    b.type = BondKind::BondType::Cos3;
     b.vec = visit(context->vec3());
   } else {
-    b.type = 1; // BondKind::BondType::Harmonic;
+    b.type = BondKind::BondType::Harmonic;
     b.vec.x = visit(context->num(0));
     b.vec.y = visit(context->num(1));
   }
-  std::cout << "Return b" << std::endl;
   return b;
 }
 

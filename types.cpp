@@ -29,19 +29,19 @@ std::ostream &operator<<(std::ostream &out, const Atom &atom) {
 }
 
 std::ostream &operator<<(std::ostream &out, const Bond &bond) {
-  out << "Bond " << bond.tag << " " << bond.i << " " << bond.j;
+  out << "Bond " << bond.i << " " << bond.j << " " << bond.tag;
   return out;
 }
 
 std::ostream &operator<<(std::ostream &out, const Angle &angle) {
-  out << "Angle " << angle.tag << " " << angle.a << " " << angle.b << " "
-      << angle.c;
+  out << "Angle " << angle.a << " " << angle.b << " " << angle.c << " "
+      << angle.tag;
   return out;
 }
 
 std::ostream &operator<<(std::ostream &out, const Torsion &torsion) {
-  out << "Torsion " << torsion.tag << " " << torsion.a << " " << torsion.b
-      << " " << torsion.c << " " << torsion.d;
+  out << "Torsion " << torsion.a << " " << torsion.b << " " << torsion.c << " "
+      << torsion.d << " " << torsion.tag;
   return out;
 }
 

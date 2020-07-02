@@ -13,9 +13,8 @@ struct Vec3 {
 };
 
 struct BondKind {
-  // enum BondType { Harmonic, Cos3 };
-  // BondType type;
-  int type;
+  enum BondType { Harmonic, Cos3 };
+  BondType type;
   Vec3 vec;
   friend std::ostream& operator<<(std::ostream& out, const BondKind& bond);
 };
