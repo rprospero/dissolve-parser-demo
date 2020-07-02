@@ -7,13 +7,13 @@ options {
   }
 
 program :
+	master*
+	species+
 	section+
 	;
 
 section :
-	master
-    | species
-    | pairPotential
+    pairPotential
     | configuration
     | layer
     | simulation
@@ -64,6 +64,7 @@ speciesForcefield : 'Forcefield' name=str ;
 
 bondKind : 'Harmonic' num num | REF | 'Cos3' vec3 ;
 
+REF : '@' WORD ;
 
 siteTerm : siteOriginMassWeighted
     | siteOrigin
@@ -252,13 +253,11 @@ INT: '\'' SIGNED DIGITS '\'' | SIGNED DIGITS ;
 
 QUOTE: '\''~('\'')+'\'';
 
-REF: '@' WORD;
-
 ISO: [A-Z]+ '=' DIGITS;
 
 WORD: ~(' ' | '\r' | '\n')+ ;
 
-str : REF | QUOTE | WORD ;
+str : QUOTE | WORD ;
 num : Num | INT ;
 vec3 : x=num y=num z=num ;
 

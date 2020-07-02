@@ -8,7 +8,7 @@ CC = g++ -g -std=c++17
 
 PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ)
 
-VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ)
+VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ) Visitor-master$(OBJ)
 
 all: cpp_parser.o types.o $(PARSE_OBJ) $(VISITOR_OBJ)
 	$(CC) $(LINK) $(PARSE_OBJ) $(VISITOR_OBJ) cpp_parser.o types.o
@@ -23,4 +23,4 @@ types.o: types.cpp types.h
 	$(CC) -c -o $@ $< $(INCLUDE)
 
 clean:
-	rm -rf $(PARSE_OBJ) cpp_parser.o a.out
+	rm -rf *.o a.out

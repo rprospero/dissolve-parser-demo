@@ -10,11 +10,10 @@ antlrcpp::Any MyVisitor::visitBoolean(DissolveParser::BooleanContext *context) {
 }
 
 antlrcpp::Any MyVisitor::visitStr(DissolveParser::StrContext *context) {
-  if (context->REF()) {
-    return context->REF()->getText();
-  }
   if (context->QUOTE()) {
-    return context->QUOTE()->getText();
+
+    return context->QUOTE()->getText().substr(
+	1, context->QUOTE()->getText().length() - 2);
   }
   return context->WORD()->getText();
 }
