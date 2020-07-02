@@ -6,16 +6,15 @@ OBJ = .o
 GRAMMAR = Dissolve
 CC = g++ -g -std=c++17
 
-PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ) Visitor$(OBJ)
+PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ)
 
-all: cpp_parser.o $(PARSE_OBJ)
-	$(CC) $(LINK) $(PARSE_OBJ) cpp_parser.o
+VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ)
+
+all: cpp_parser.o $(PARSE_OBJ) $(VISITOR_OBJ)
+	$(CC) $(LINK) $(PARSE_OBJ) $(VISITOR_OBJ) cpp_parser.o
 
 $(GRAMMAR)Lexer.cpp : $(GRAMMAR).g4
 	antlr -Dlanguage=Cpp -visitor $(GRAMMAR).g4
-
-Visitor.o: Visitor.cpp types.h
-	$(CC) -c -o $@ $< $(INCLUDE)
 
 %.o: %.cpp
 	$(CC) -c -o $@ $< $(INCLUDE)
