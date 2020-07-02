@@ -1,3 +1,9 @@
 /a.out
 *.hi
 *.o
+/Dissolve*.h
+/Dissolve.interp
+/Dissolve.tokens
+/Dissolve*.cpp
+/DissolveLexer.interp
+/DissolveLexer.tokens
