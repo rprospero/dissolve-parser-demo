@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <optional>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -8,10 +9,7 @@ using BondKind = std::string;
 
 struct Vec3 {
   double x, y, z;
-  friend std::ostream& operator<<(std::ostream& out, const Vec3& vec) {
-    out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Vec3& vec);
 };
 
 struct Atom {
@@ -19,49 +17,31 @@ struct Atom {
   Vec3 position;
   std::string element, type;
   std::optional<double> charge;
-  friend std::ostream& operator<<(std::ostream& out, const Atom& atom) {
-    out << "Atom " << atom.element << " " << atom.index << " " << atom.position << " " << atom.type;
-    if (atom.charge) out << " " << *atom.charge;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Atom& atom);
 };
 
 struct Bond {
   int i, j;
   BondKind tag;
-  friend std::ostream& operator<<(std::ostream& out, const Bond& bond) {
-    out << "Bond " << bond.tag << " "<< bond.i << " " << bond.j;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Bond& bond);
 };
 
 struct Angle {
   int a, b, c;
   BondKind tag;
-  friend std::ostream& operator<<(std::ostream& out, const Angle& angle) {
-    out << "Angle " << angle.tag << " " << angle.a << " " << angle.b << " " << angle.c;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Angle& angle);
 };
 
 struct Torsion {
   int a, b, c, d;
   BondKind tag;
-  friend std::ostream& operator<<(std::ostream& out, const Torsion& torsion) {
-    out << "Torsion " << torsion.tag << " " << torsion.a << " " << torsion.b << " " << torsion.c << " " << torsion.d;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Torsion& torsion);
 };
 
 struct Isotopologue {
   std::string name;
   std::vector<std::string> kind;
-  friend std::ostream& operator<<(std::ostream& out, const Isotopologue& isotopologue) {
-    out << "Isotopologue " << isotopologue.name;
-    for (auto k : isotopologue.kind)
-      out << " " << k;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Isotopologue& isotopologue);
 };
 
 struct Site {
@@ -70,23 +50,12 @@ struct Site {
   bool massWeighted;
   int xaxis;
   int yaxis;
-  friend std::ostream& operator<<(std::ostream& out, const Site& site) {
-    out << "Site " << site.name;
-    out << " Origin";
-    for (auto org : site.origins) out << " " << org;
-    out << " Mass Weighted " << site.massWeighted;
-    out << " xaxis " << site.xaxis;
-    out << " yaxis " << site.yaxis;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Site& site);
 };
 
 struct Forcefield {
   std::string name;
-  friend std::ostream& operator<<(std::ostream& out, const Forcefield& forcefield) {
-    out << "Forcefield" << forcefield.name;
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Forcefield& forcefield);
 };
 
 // using Atom = int;
@@ -104,15 +73,5 @@ public:
   std::vector<Isotopologue> isotopologues_;
   std::vector<Site> sites_;
   std::vector<Forcefield> forcefields_;
-  friend std::ostream& operator<<(std::ostream& out, const Species& s) {
-    out << "Species " << s.name_ << std::endl;
-    for (auto atom : s.atoms_) {out << atom << std::endl;}
-    for (auto bond : s.bonds_) {out << bond << std::endl;}
-    for (auto angle : s.angles_) {out << angle << std::endl;}
-    for (auto torsion : s.torsions_) {out << torsion << std::endl;}
-    for (auto isotopologue : s.isotopologues_) {out << isotopologue << std::endl;}
-    for (auto site : s.sites_) {out << site << std::endl;}
-    for (auto forcefield : s.forcefields_) {out << forcefield << std::endl;}
-    return out;
-  }
+  friend std::ostream& operator<<(std::ostream& out, const Species& s);
 };
