@@ -9,8 +9,6 @@ private:
   std::map<std::string, BondKind> references_;
 
 public:
-  // antlrcpp::Any visitMaster(DissolveParser::MasterContext *context) override;
-
   antlrcpp::Any
   visitMasterAngle(DissolveParser::MasterAngleContext *context) override;
 

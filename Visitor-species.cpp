@@ -132,7 +132,6 @@ MyVisitor::visitSiteOrigin(DissolveParser::SiteOriginContext *context) {
 antlrcpp::Any
 MyVisitor::visitBondKind(DissolveParser::BondKindContext *context) {
   if (context->REF()) {
-    std::cout << "Reference " << context->REF()->getText() << " is " << references_[context->getText()] << std::endl;
     return references_[context->getText()];
   }
   return context->getText();
