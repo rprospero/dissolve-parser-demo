@@ -1,3 +1,10 @@
+/*
+  This file contains all of the types that we intend to parse out of
+  the file.  In the actual dissolve, these types are already defined
+  for us, so much of this wouldn't have to exist.  However, some of
+  this is also meant to show how some of those classes might be
+  simplified.
+ */
 #pragma once
 
 #include <iostream>
@@ -7,11 +14,19 @@
 #include <variant>
 #include <vector>
 
+// This class defines a three-vector of doubles
 struct Vec3 {
   double x, y, z;
   friend std::ostream& operator<<(std::ostream& out, const Vec3& vec);
 };
 
+
+/*
+  We use a variant to represent the different types of bond definition
+  that we can have.  Since we're not using pointers, we can't just use
+  inheritance, since the compiler needs to know the amount of space to
+  allocate.
+ */
 struct Harmonic {
   double i, j;
   friend std::ostream& operator<<(std::ostream& out, const Harmonic& bond);
@@ -24,8 +39,11 @@ struct Cos3 {
 
 using BondKind = std::variant<Harmonic, Cos3>;
 
+// Since BondKind isn't a real class, we need to declare the <<
+// operator separately.
 std::ostream& operator<<(std::ostream& out, const BondKind& bond);
 
+// The class for a single atom in Dissolve
 struct Atom {
   int index;
   Vec3 position;
@@ -34,30 +52,36 @@ struct Atom {
   friend std::ostream& operator<<(std::ostream& out, const Atom& atom);
 };
 
+// The class for the bond between two atoms
 struct Bond {
   int i, j;
   BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Bond& bond);
 };
 
+// The class for the angle between three atoms
 struct Angle {
   int a, b, c;
   BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Angle& angle);
 };
 
+// The class for the torsion across four atoms.
 struct Torsion {
   int a, b, c, d;
   BondKind tag;
   friend std::ostream& operator<<(std::ostream& out, const Torsion& torsion);
 };
 
+// A collectiong of Isotopologues.  We may need to parse and define these a bit better
 struct Isotopologue {
   std::string name;
   std::vector<std::string> kind;
   friend std::ostream& operator<<(std::ostream& out, const Isotopologue& isotopologue);
 };
 
+// The location of a site within a species.  We may want to split this
+// into two classes, one which is mass weighted and one which isn't.
 struct Site {
   std::string name;
   std::vector<int> origins;
@@ -67,15 +91,13 @@ struct Site {
   friend std::ostream& operator<<(std::ostream& out, const Site& site);
 };
 
+// Which forcefield to use for a species
 struct Forcefield {
   std::string name;
   friend std::ostream& operator<<(std::ostream& out, const Forcefield& forcefield);
 };
 
-// using Atom = int;
-using NullTerm = std::tuple<double, double>;
-using SpeciesTerm = std::variant<Bond, Angle, NullTerm>;
-
+// A single species within the simulation
 class Species {
 public:
   Species(std::string name, std::vector<Atom> atoms, std::vector<Bond> bonds, std::vector<Angle> angles, std::vector<Torsion> torsions, std::vector<Isotopologue> isos, std::vector<Site> sites, std::vector<Forcefield> forcefields) : name_(name), atoms_(atoms), bonds_(bonds), angles_(angles), torsions_(torsions), isotopologues_(isos), sites_(sites), forcefields_(forcefields) {}

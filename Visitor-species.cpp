@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 
+// Parse a single species and print it out
 antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   std::vector<Atom> atoms;
   std::vector<Bond> bonds;
@@ -38,6 +39,7 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   return result;
 }
 
+//Parse an Atom from a species
 antlrcpp::Any
 MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
   Atom atom;
@@ -52,6 +54,7 @@ MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
   return atom;
 }
 
+//Parse a bond from a species
 antlrcpp::Any
 MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
   Bond bond;
@@ -61,6 +64,7 @@ MyVisitor::visitSpeciesBond(DissolveParser::SpeciesBondContext *context) {
   return bond;
 }
 
+//Parse an angle from a species
 antlrcpp::Any
 MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
   Angle angle;
@@ -70,6 +74,8 @@ MyVisitor::visitSpeciesAngle(DissolveParser::SpeciesAngleContext *context) {
   angle.tag = strictBondKind(context->bondKind());
   return angle;
 }
+
+//Parse a torsion from a species
 antlrcpp::Any
 MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
   Torsion torsion;
@@ -80,6 +86,8 @@ MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
   torsion.tag = strictBondKind(context->bondKind());
   return torsion;
 }
+
+//parse an isotopologue in a species
 antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
     DissolveParser::SpeciesIsotopologueContext *context) {
   Isotopologue iso;
@@ -90,6 +98,10 @@ antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
   return iso;
 }
 
+//parse a site in a species.
+//
+//By convention, the xaxis and yaxis are zero when the site isn't mass
+//weighted.
 antlrcpp::Any
 MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   Site result;
@@ -110,16 +122,20 @@ MyVisitor::visitSpeciesSite(DissolveParser::SpeciesSiteContext *context) {
   // }
   return result;
 }
+
+//Parse an XAxis in a Site
 antlrcpp::Any
 MyVisitor::visitSiteXAxis(DissolveParser::SiteXAxisContext *context) {
   return std::stoi(context->INT()->getText());
 }
 
+//Parse an YAxis in a Site
 antlrcpp::Any
 MyVisitor::visitSiteYAxis(DissolveParser::SiteYAxisContext *context) {
   return std::stoi(context->INT()->getText());
 }
 
+//Parse the Origins of a site
 antlrcpp::Any
 MyVisitor::visitSiteOrigin(DissolveParser::SiteOriginContext *context) {
   std::vector<int> result;
@@ -129,6 +145,7 @@ MyVisitor::visitSiteOrigin(DissolveParser::SiteOriginContext *context) {
   return result;
 }
 
+// Parse a bond term, which is currently either Harmonic or Cos3
 BondKind MyVisitor::strictBondKind(DissolveParser::BondKindContext *context) {
   if (context->REF()) {
     return references_[context->getText()];
@@ -145,6 +162,7 @@ BondKind MyVisitor::strictBondKind(DissolveParser::BondKindContext *context) {
   }
 }
 
+// Parse a forcefield from a species
 antlrcpp::Any MyVisitor::visitSpeciesForcefield(
     DissolveParser::SpeciesForcefieldContext *context) {
   Forcefield result;

@@ -1,3 +1,16 @@
+/*
+  This file contains the implementations of the << operator for all of
+  the datatypes included in types.h.  This file exists both to save a
+  bit on compiling time and as a poor, lazy way to force the makefile
+  to recompile when I add new types to types.h.
+
+  There's probably a better way of doing that, but this is just the
+  prototype and all of this would be handled through cmake in the
+  actual dissolve, anyway.
+
+  Minor point of pride - There's currently only a single if statement
+  in this whole file.
+*/
 #include "types.h"
 #include <iostream>
 
