@@ -10,6 +10,9 @@ private:
 
 public:
   antlrcpp::Any
+  visitProgram(DissolveParser::ProgramContext *context) override;
+
+  antlrcpp::Any
   visitMasterAngle(DissolveParser::MasterAngleContext *context) override;
 
   antlrcpp::Any

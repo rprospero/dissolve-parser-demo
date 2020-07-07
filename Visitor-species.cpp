@@ -34,8 +34,6 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
   Species result(name, atoms, bonds, angles, torsions, isotopologues, sites,
 		 forcefields);
 
-  std::cout << result << std::endl;
-
   return result;
 }
 

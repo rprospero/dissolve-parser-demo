@@ -18,14 +18,18 @@ all: a.out
 a.out: $(PARSE_OBJ) $(VISITOR_OBJ) cpp_parser.o types.o
 	$(CC) $(LINK) $(PARSE_OBJ) $(VISITOR_OBJ) cpp_parser.o types.o
 
-$(GRAMMAR)Lexer.cpp : $(GRAMMAR).g4
+$(GRAMMAR)BaseVisitor.cpp : $(GRAMMAR).g4
 	antlr -Dlanguage=Cpp -visitor $(GRAMMAR).g4
 
 types.o: types.cpp types.h
 	$(CC) -c -o $@ $< $(INCLUDE)
 
+Visitor.o: Visitor.cpp $(GRAMMAR)BaseVisitor.cpp
+	$(CC) -c -o $@ $< $(INCLUDE)
+
 clean:
 	rm -rf *.o a.out
+	rm $(GRAMMAR)Base*.h $(GRAMMAR)Base*.cpp
 
 test: a.out
 	./a.out ./*.txt

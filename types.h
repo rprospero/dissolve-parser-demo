@@ -111,3 +111,12 @@ public:
   std::vector<Forcefield> forcefields_;
   friend std::ostream& operator<<(std::ostream& out, const Species& s);
 };
+
+//The full program specified in the file
+class Program {
+public:
+  Program(std::vector<Species> species) : species_(species) {}
+  friend std::ostream& operator<<(std::ostream& out, const Program& p);
+private:
+  std::vector<Species> species_;
+};

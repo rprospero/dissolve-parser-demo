@@ -6,6 +6,7 @@ options {
   language=Cpp;
   }
 
+// The program is the top level of the grammar that parses the entire file
 program :
 	master*
 	species+

@@ -34,3 +34,13 @@ antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
   double n = std::stof(context->INT()->getText());
   return n;
 }
+
+
+// The top level program visitor
+antlrcpp::Any MyVisitor::visitProgram(DissolveParser::ProgramContext *context) {
+  std::vector<Species> species;
+  for (auto &ctx: context->species()) {
+    species.push_back(visit(ctx));
+  }
+  return Program(species);
+}

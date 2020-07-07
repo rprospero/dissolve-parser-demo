@@ -21,7 +21,8 @@ int main(int argc, const char* argv[]) {
     // std::cout << tree->toStringTree(&parser) << std::endl;
 
     MyVisitor visitor;
-    visitor.visit(tree);
+    Program result = visitor.visit(tree);
+    std::cout << result << std::endl;
     std::cout << "********************************************************************************" << std::endl;
   }
   return 0;

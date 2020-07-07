@@ -100,3 +100,12 @@ std::ostream &operator<<(std::ostream &out, const Species &s) {
   }
   return out;
 }
+
+std::ostream &operator<<(std::ostream &out, const Program &p) {
+  out << "Program Description" << std::endl;
+  for (auto s : p.species_) {
+    out << s << std::endl;
+  }
+  out << "End Program" << std::endl;
+  return out;
+}
