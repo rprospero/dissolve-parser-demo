@@ -6,18 +6,21 @@ std::ostream &operator<<(std::ostream &out, const Vec3 &vec) {
   return out;
 }
 
-std::ostream &operator<<(std::ostream &out, const BondKind &bond) {
-  switch (bond.type) {
-  case 1:
-    // case BondKind::BondType::Harmonic:
-    out << "Harmonic " << bond.vec.x << " " << bond.vec.y;
-    break;
-  case 0:
-    // case BondKind::BondType::Cos3:
-    out << "Cos3 " << bond.vec;
-    break;
+std::ostream &operator<<(std::ostream &out, const Cos3 &bond) {
+  return out << "Cos3 " << bond.vec;
+}
+
+std::ostream &operator<<(std::ostream &out, const Harmonic &bond) {
+  return out << "Harmonic " << bond.i << " " << bond.j;
+}
+
+std::ostream& operator<<(std::ostream& out, const BondKind& bond) {
+  if (std::holds_alternative<Cos3>(bond)) {
+    return out << std::get<Cos3>(bond);
+  } else if (std::holds_alternative<Harmonic>(bond)) {
+    return out << std::get<Harmonic>(bond);
   }
-  return out;
+  return out << "Invalid BondKind" << bond.index();
 }
 
 std::ostream &operator<<(std::ostream &out, const Atom &atom) {

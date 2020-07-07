@@ -12,12 +12,19 @@ struct Vec3 {
   friend std::ostream& operator<<(std::ostream& out, const Vec3& vec);
 };
 
-struct BondKind {
-  enum BondType { Harmonic, Cos3 };
-  BondType type;
-  Vec3 vec;
-  friend std::ostream& operator<<(std::ostream& out, const BondKind& bond);
+struct Harmonic {
+  double i, j;
+  friend std::ostream& operator<<(std::ostream& out, const Harmonic& bond);
 };
+
+struct Cos3 {
+  Vec3 vec;
+  friend std::ostream& operator<<(std::ostream& out, const Cos3& bond);
+};
+
+using BondKind = std::variant<Harmonic, Cos3>;
+
+std::ostream& operator<<(std::ostream& out, const BondKind& bond);
 
 struct Atom {
   int index;

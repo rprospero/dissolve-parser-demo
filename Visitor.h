@@ -41,8 +41,8 @@ public:
   antlrcpp::Any visitSpeciesForcefield(
       DissolveParser::SpeciesForcefieldContext *context) override;
 
-  antlrcpp::Any
-  visitBondKind(DissolveParser::BondKindContext *context) override;
+  BondKind
+  strictBondKind(DissolveParser::BondKindContext *context);
 
   antlrcpp::Any
   visitSiteOrigin(DissolveParser::SiteOriginContext *context) override;
