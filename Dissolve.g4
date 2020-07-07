@@ -37,13 +37,13 @@ masterTorsion : 'Torsion' str bondKind ;
 species :
        'Species'
        name=str
-       speciesAtom+
-       speciesBond*
-       speciesAngle*
-       speciesTorsion*
-       speciesIsotopologue*
-       speciesSite*
-       speciesForcefield*
+       (speciesAtom
+       | speciesBond
+       | speciesAngle
+       | speciesTorsion
+       | speciesIsotopologue
+       | speciesSite
+       | speciesForcefield)+
        'EndSpecies'
        ;
 
