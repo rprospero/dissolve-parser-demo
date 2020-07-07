@@ -15,12 +15,8 @@ std::ostream &operator<<(std::ostream &out, const Harmonic &bond) {
 }
 
 std::ostream& operator<<(std::ostream& out, const BondKind& bond) {
-  if (std::holds_alternative<Cos3>(bond)) {
-    return out << std::get<Cos3>(bond);
-  } else if (std::holds_alternative<Harmonic>(bond)) {
-    return out << std::get<Harmonic>(bond);
-  }
-  return out << "Invalid BondKind" << bond.index();
+  std::visit([&out](auto &&value){out << value;}, bond);
+  return out;
 }
 
 std::ostream &operator<<(std::ostream &out, const Atom &atom) {
