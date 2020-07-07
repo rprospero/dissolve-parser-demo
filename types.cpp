@@ -101,11 +101,28 @@ std::ostream &operator<<(std::ostream &out, const Species &s) {
   return out;
 }
 
+// Pair Potential terms
+
+std::ostream &operator<<(std::ostream &out, const PairPotentialParameters &p) {
+  return out << "Parameters " << p.name_ << " " << p.element_ << " "
+	     << p.strength_;
+}
+
+std::ostream &operator<<(std::ostream &out, const PairPotential &p) {
+  out << "Pair Potential" << std::endl;
+  for (auto param : p.params_)
+    out << param << std::endl;
+  return out;
+}
+
+// The main program
+
 std::ostream &operator<<(std::ostream &out, const Program &p) {
   out << "Program Description" << std::endl;
   for (auto s : p.species_) {
     out << s << std::endl;
   }
+  out << p.pairPotential_;
   out << "End Program" << std::endl;
   return out;
 }

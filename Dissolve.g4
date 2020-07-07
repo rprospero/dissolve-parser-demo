@@ -10,14 +10,7 @@ options {
 program :
 	master*
 	species+
-	section+
-	;
-
-section :
-    pairPotential
-    | configuration
-    | layer
-    | simulation
+	(pairPotential | configuration | layer | simulation)*
 	;
 
 // Master Section
@@ -82,20 +75,16 @@ siteYAxis : 'YAxis' INT ;
 
 pairPotential :
         'PairPotentials'
-        pairPotentialTerm+
-        'EndPairPotentials'
-    ;
-
-pairPotentialTerm :
-  pairPotentialsParameters
+  (pairPotentialsParameters
   | pairPotentialsRange
   | pairPotentialsDelta
   | pairPotentialsIncludeCoulomb
   | pairPotentialsCoulombTruncation
-  | pairPotentialsShortRangeTruncation
+  | pairPotentialsShortRangeTruncation)+
+  'EndPairPotentials'
     ;
 
-pairPotentialsParameters : 'Parameters' str str num pp ;
+pairPotentialsParameters : 'Parameters' name=str element=str strength=num pp ;
 
 pp : ljGeometric | lj ;
 lj : 'LJ' num+ ;

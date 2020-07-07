@@ -8,7 +8,7 @@ CC = g++ -g -Og -std=c++17
 
 PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ)
 
-VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ) Visitor-master$(OBJ)
+VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ) Visitor-master$(OBJ) Visitor-pairPotential$(OBJ)
 
 all: a.out
 

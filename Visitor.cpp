@@ -35,12 +35,12 @@ antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
   return n;
 }
 
-
 // The top level program visitor
 antlrcpp::Any MyVisitor::visitProgram(DissolveParser::ProgramContext *context) {
   std::vector<Species> species;
-  for (auto &ctx: context->species()) {
+  for (auto &ctx : context->species()) {
     species.push_back(visit(ctx));
   }
-  return Program(species);
+  auto pp = visit(context->pairPotential(0));
+  return Program(species, pp);
 }

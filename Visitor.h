@@ -9,8 +9,11 @@ private:
   std::map<std::string, BondKind> references_;
 
 public:
+  //The main parser
   antlrcpp::Any
   visitProgram(DissolveParser::ProgramContext *context) override;
+
+  // The parsers for master terms
 
   antlrcpp::Any
   visitMasterAngle(DissolveParser::MasterAngleContext *context) override;
@@ -20,6 +23,8 @@ public:
 
   antlrcpp::Any
   visitMasterTorsion(DissolveParser::MasterTorsionContext *context) override;
+
+  //The parsers for species terms
 
   antlrcpp::Any visitSpecies(DissolveParser::SpeciesContext *context) override;
 
@@ -47,6 +52,7 @@ public:
   BondKind
   strictBondKind(DissolveParser::BondKindContext *context);
 
+  //The parsers for Site components
   antlrcpp::Any
   visitSiteOrigin(DissolveParser::SiteOriginContext *context) override;
 
@@ -56,6 +62,14 @@ public:
   antlrcpp::Any
   visitSiteYAxis(DissolveParser::SiteYAxisContext *context) override;
 
+  //The parsers for pair potential terms
+
+  antlrcpp::Any visitPairPotential(DissolveParser::PairPotentialContext *context) override;
+
+  antlrcpp::Any visitPairPotentialsParameters(DissolveParser::PairPotentialsParametersContext *context) override;
+
+
+  //The parsers for low level types
   antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;

@@ -112,11 +112,30 @@ public:
   friend std::ostream& operator<<(std::ostream& out, const Species& s);
 };
 
+// The Pair Potential terms
+class PairPotentialParameters {
+public:
+  PairPotentialParameters(std::string name, std::string element, double strength) : name_(name), element_(element), strength_(strength) {};
+  friend std::ostream& operator<<(std::ostream& out, const PairPotentialParameters& p);
+private:
+  std::string name_, element_;
+  double strength_;
+};
+
+class PairPotential {
+public:
+  PairPotential(std::vector<PairPotentialParameters> params) : params_(params) {};
+  friend std::ostream& operator<<(std::ostream& out, const PairPotential& s);
+private:
+  std::vector<PairPotentialParameters> params_;
+};
+
 //The full program specified in the file
 class Program {
 public:
-  Program(std::vector<Species> species) : species_(species) {}
+  Program(std::vector<Species> species, PairPotential pairPotential) : species_(species), pairPotential_(pairPotential) {}
   friend std::ostream& operator<<(std::ostream& out, const Program& p);
 private:
   std::vector<Species> species_;
+  PairPotential pairPotential_;
 };
