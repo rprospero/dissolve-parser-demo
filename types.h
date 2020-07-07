@@ -112,14 +112,26 @@ public:
   friend std::ostream& operator<<(std::ostream& out, const Species& s);
 };
 
+class PP {
+public:
+  enum PPType {LJ, LJGeometric};
+  PP(PPType type, std::vector<double> params) : params_(params), type_(type) {}
+  friend std::ostream& operator<<(std::ostream& out, const PP& p);
+private:
+  PPType type_;
+  std::vector<double> params_;
+};
+
+
 // The Pair Potential terms
 class PairPotentialParameters {
 public:
-  PairPotentialParameters(std::string name, std::string element, double strength) : name_(name), element_(element), strength_(strength) {};
+  PairPotentialParameters(std::string name, std::string element, double strength, PP type) : name_(name), element_(element), strength_(strength), type_(type) {};
   friend std::ostream& operator<<(std::ostream& out, const PairPotentialParameters& p);
 private:
   std::string name_, element_;
   double strength_;
+  PP type_;
 };
 
 class PairPotential {

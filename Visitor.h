@@ -64,6 +64,8 @@ public:
 
   //The parsers for pair potential terms
 
+  antlrcpp::Any visitPp(DissolveParser::PpContext *context) override;
+
   antlrcpp::Any visitPairPotential(DissolveParser::PairPotentialContext *context) override;
 
   antlrcpp::Any visitPairPotentialsParameters(DissolveParser::PairPotentialsParametersContext *context) override;

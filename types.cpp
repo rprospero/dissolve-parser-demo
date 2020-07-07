@@ -103,9 +103,24 @@ std::ostream &operator<<(std::ostream &out, const Species &s) {
 
 // Pair Potential terms
 
+std::ostream &operator<<(std::ostream &out, const PP &p) {
+  switch (p.type_) {
+  case PP::PPType::LJ:
+    out << "LJ";
+    break;
+  case PP::PPType::LJGeometric:
+    out << "LJGeometric";
+    break;
+  }
+  for (auto &param : p.params_) {
+    out << " " << param;
+  }
+  return out;
+};
+
 std::ostream &operator<<(std::ostream &out, const PairPotentialParameters &p) {
   return out << "Parameters " << p.name_ << " " << p.element_ << " "
-	     << p.strength_;
+	     << p.strength_ << " " << p.type_;
 }
 
 std::ostream &operator<<(std::ostream &out, const PairPotential &p) {
