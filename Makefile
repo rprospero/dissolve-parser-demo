@@ -10,7 +10,9 @@ PARSE_OBJ = $(GRAMMAR)Lexer$(OBJ) $(GRAMMAR)Parser$(OBJ)
 
 VISITOR_OBJ = Visitor$(OBJ) Visitor-species$(OBJ) Visitor-master$(OBJ)
 
-all: cpp_parser.o types.o $(PARSE_OBJ) $(VISITOR_OBJ)
+all: a.out
+
+a.out: cpp_parser.o types.o $(PARSE_OBJ) $(VISITOR_OBJ)
 	$(CC) $(LINK) $(PARSE_OBJ) $(VISITOR_OBJ) cpp_parser.o types.o
 
 $(GRAMMAR)Lexer.cpp : $(GRAMMAR).g4
@@ -24,3 +26,6 @@ types.o: types.cpp types.h
 
 clean:
 	rm -rf *.o a.out
+
+test: a.out
+	./a.out ./*.txt
