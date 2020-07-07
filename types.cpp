@@ -2,8 +2,7 @@
 #include <iostream>
 
 std::ostream &operator<<(std::ostream &out, const Vec3 &vec) {
-  out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
-  return out;
+  return out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
 }
 
 std::ostream &operator<<(std::ostream &out, const Cos3 &bond) {
@@ -14,8 +13,8 @@ std::ostream &operator<<(std::ostream &out, const Harmonic &bond) {
   return out << "Harmonic " << bond.i << " " << bond.j;
 }
 
-std::ostream& operator<<(std::ostream& out, const BondKind& bond) {
-  std::visit([&out](auto &&value){out << value;}, bond);
+std::ostream &operator<<(std::ostream &out, const BondKind &bond) {
+  std::visit([&out](auto &&value) { out << value; }, bond);
   return out;
 }
 
@@ -28,20 +27,17 @@ std::ostream &operator<<(std::ostream &out, const Atom &atom) {
 }
 
 std::ostream &operator<<(std::ostream &out, const Bond &bond) {
-  out << "Bond " << bond.i << " " << bond.j << " " << bond.tag;
-  return out;
+  return out << "Bond " << bond.i << " " << bond.j << " " << bond.tag;
 }
 
 std::ostream &operator<<(std::ostream &out, const Angle &angle) {
-  out << "Angle " << angle.a << " " << angle.b << " " << angle.c << " "
-      << angle.tag;
-  return out;
+  return out << "Angle " << angle.a << " " << angle.b << " " << angle.c << " "
+	     << angle.tag;
 }
 
 std::ostream &operator<<(std::ostream &out, const Torsion &torsion) {
-  out << "Torsion " << torsion.a << " " << torsion.b << " " << torsion.c << " "
-      << torsion.d << " " << torsion.tag;
-  return out;
+  return out << "Torsion " << torsion.a << " " << torsion.b << " " << torsion.c
+	     << " " << torsion.d << " " << torsion.tag;
 }
 
 std::ostream &operator<<(std::ostream &out, const Isotopologue &isotopologue) {
@@ -63,8 +59,7 @@ std::ostream &operator<<(std::ostream &out, const Site &site) {
 }
 
 std::ostream &operator<<(std::ostream &out, const Forcefield &forcefield) {
-  out << "Forcefield" << forcefield.name;
-  return out;
+  return out << "Forcefield" << forcefield.name;
 }
 
 std::ostream &operator<<(std::ostream &out, const Species &s) {
