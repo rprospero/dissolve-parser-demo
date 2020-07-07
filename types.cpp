@@ -127,6 +127,8 @@ std::ostream &operator<<(std::ostream &out, const PairPotential &p) {
   out << "Pair Potential" << std::endl;
   for (auto param : p.params_)
     out << param << std::endl;
+  out << "Range " << p.range_ << std::endl;
+  out << "Delta " << p.delta_ << std::endl;
   return out;
 }
 

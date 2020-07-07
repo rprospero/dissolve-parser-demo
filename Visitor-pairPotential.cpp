@@ -9,15 +9,18 @@
 antlrcpp::Any
 MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
   std::vector<PairPotentialParameters> params;
-  double range = 0;
+  double range = 0, delta = 0;
   for (auto &par : context->pairPotentialsParameters()) {
     params.push_back(visitPairPotentialsParameters(par));
   }
   if (!context->pairPotentialsRange().empty()) {
     range = visit(context->pairPotentialsRange(0)->num());
   }
+  if (!context->pairPotentialsDelta().empty()) {
+    delta = visit(context->pairPotentialsDelta(0)->num());
+  }
 
-  return PairPotential(params, range);
+  return PairPotential(params, range, delta);
 };
 
 antlrcpp::Any MyVisitor::visitPairPotentialsParameters(

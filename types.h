@@ -136,10 +136,11 @@ private:
 
 class PairPotential {
 public:
-  PairPotential(std::vector<PairPotentialParameters> params) : params_(params) {};
+  PairPotential(std::vector<PairPotentialParameters> params, double range, double delta) : params_(params), range_(range), delta_(delta) {};
   friend std::ostream& operator<<(std::ostream& out, const PairPotential& s);
 private:
   std::vector<PairPotentialParameters> params_;
+  double range_, delta_;
 };
 
 //The full program specified in the file
