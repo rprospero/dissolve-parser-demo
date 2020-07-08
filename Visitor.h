@@ -89,4 +89,21 @@ public:
     for (auto item : context) result.push_back(visit(item));
     return result;
   }
+  template <typename T, class Context, typename Lambda>
+  std::vector<T> visitVector(std::vector<Context*> context, Lambda lambda) {
+    std::vector<T> result;
+    for (auto item : context) result.push_back(lambda(item));
+    return result;
+  }
+  template <typename T, class Context>
+  std::optional<T> visitOptional(Context* context) {
+    if (context == nullptr) return std::nullopt;
+    T result = visit(context);
+    return result;
+  }
+  template <typename T, class Context>
+  T visitDefault(Context* context, T def) {
+    if (context == nullptr) return def;
+    return visit(context);
+  }
 };

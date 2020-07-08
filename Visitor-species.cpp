@@ -20,16 +20,9 @@ antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
 // Parse an Atom from a species
 antlrcpp::Any
 MyVisitor::visitSpeciesAtom(DissolveParser::SpeciesAtomContext *context) {
-  Atom atom;
-  atom.index = std::stoi(context->index->getText());
-  atom.position = visit(context->vec3());
-  std::string element = visit(context->element);
-  atom.element = element;
-  std::string type = visit(context->atomtype);
-  atom.type = type;
-  if (context->charge)
-    atom.charge = visit(context->charge);
-  return atom;
+  return Atom{std::stoi(context->index->getText()), visit(context->vec3()),
+	      visit(context->element), visit(context->atomtype),
+	      visitOptional<double>(context->charge)};
 }
 
 // Parse a bond from a species
@@ -64,12 +57,10 @@ MyVisitor::visitSpeciesTorsion(DissolveParser::SpeciesTorsionContext *context) {
 // parse an isotopologue in a species
 antlrcpp::Any MyVisitor::visitSpeciesIsotopologue(
     DissolveParser::SpeciesIsotopologueContext *context) {
-  Isotopologue iso;
-  iso.name = context->name->getText();
-  for (auto kind : context->ISO()) {
-    iso.kind.push_back(kind->getText());
-  }
-  return iso;
+  return Isotopologue{context->name->getText(),
+		      visitVector<std::string>(context->ISO(), [](auto kind) {
+			return kind->getText();
+		      })};
 }
 
 // parse a site in a species.
@@ -105,11 +96,8 @@ MyVisitor::visitSiteYAxis(DissolveParser::SiteYAxisContext *context) {
 // Parse the Origins of a site
 antlrcpp::Any
 MyVisitor::visitSiteOrigin(DissolveParser::SiteOriginContext *context) {
-  std::vector<int> result;
-  for (auto ctx : context->INT()) {
-    result.push_back(std::stoi(ctx->getText()));
-  }
-  return result;
+  return visitVector<int>(context->INT(),
+			  [](auto &ctx) { return std::stoi(ctx->getText()); });
 }
 
 // Parse a bond term, which is currently either Harmonic or Cos3
