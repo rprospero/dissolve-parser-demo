@@ -7,34 +7,14 @@
 
 // Parse a single species and print it out
 antlrcpp::Any MyVisitor::visitSpecies(DissolveParser::SpeciesContext *context) {
-  std::vector<Atom> atoms;
-  std::vector<Bond> bonds;
-  std::vector<Angle> angles;
-  std::vector<Torsion> torsions;
-  std::vector<Isotopologue> isotopologues;
-  std::vector<Site> sites;
-  std::vector<Forcefield> forcefields;
-  std::string name = visit(context->name);
-
-  for (auto &at : context->speciesAtom())
-    atoms.push_back(visit(at));
-  for (auto &bond : context->speciesBond())
-    bonds.push_back(visit(bond));
-  for (auto &angle : context->speciesAngle())
-    angles.push_back(visit(angle));
-  for (auto &torsion : context->speciesTorsion())
-    torsions.push_back(visit(torsion));
-  for (auto &isotopologue : context->speciesIsotopologue())
-    isotopologues.push_back(visit(isotopologue));
-  for (auto &site : context->speciesSite())
-    sites.push_back(visit(site));
-  for (auto &forcefield : context->speciesForcefield())
-    forcefields.push_back(visit(forcefield));
-
-  Species result(name, atoms, bonds, angles, torsions, isotopologues, sites,
-		 forcefields);
-
-  return result;
+  return Species{visit(context->name),
+		 visitVector<Atom>(context->speciesAtom()),
+		 visitVector<Bond>(context->speciesBond()),
+		 visitVector<Angle>(context->speciesAngle()),
+		 visitVector<Torsion>(context->speciesTorsion()),
+		 visitVector<Isotopologue>(context->speciesIsotopologue()),
+		 visitVector<Site>(context->speciesSite()),
+		 visitVector<Forcefield>(context->speciesForcefield())};
 }
 
 // Parse an Atom from a species

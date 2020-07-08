@@ -81,4 +81,12 @@ public:
   antlrcpp::Any visitVec3(DissolveParser::Vec3Context *context) override;
 
   antlrcpp::Any visitNum(DissolveParser::NumContext *context) override;
+
+  // A template for handling arrays
+  template <typename T, class Context>
+  std::vector<T> visitVector(std::vector<Context*> context) {
+    std::vector<T> result;
+    for (auto item : context) result.push_back(visit(item));
+    return result;
+  }
 };
