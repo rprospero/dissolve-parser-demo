@@ -86,9 +86,9 @@ struct Isotopologue {
 struct Site {
   std::string name;
   std::vector<int> origins;
-  bool massWeighted;
-  int xaxis;
-  int yaxis;
+  bool massWeighted = false;
+  int xaxis = 0;
+  int yaxis = 0;
   friend std::ostream &operator<<(std::ostream &out, const Site &site);
 };
 
