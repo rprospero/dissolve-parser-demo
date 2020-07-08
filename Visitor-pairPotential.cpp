@@ -10,6 +10,7 @@ antlrcpp::Any
 MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
   std::vector<PairPotentialParameters> params;
   double range = 0, delta = 0;
+  bool includeCoulomb;
   for (auto &par : context->pairPotentialsParameters()) {
     params.push_back(visitPairPotentialsParameters(par));
   }
@@ -19,8 +20,11 @@ MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
   if (!context->pairPotentialsDelta().empty()) {
     delta = visit(context->pairPotentialsDelta(0)->num());
   }
+  if (!context->pairPotentialsIncludeCoulomb().empty()) {
+    includeCoulomb = visit(context->pairPotentialsIncludeCoulomb(0)->boolean());
+  }
 
-  return PairPotential(params, range, delta);
+  return PairPotential(params, range, delta, includeCoulomb);
 };
 
 antlrcpp::Any MyVisitor::visitPairPotentialsParameters(

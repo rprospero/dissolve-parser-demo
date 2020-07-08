@@ -129,6 +129,8 @@ std::ostream &operator<<(std::ostream &out, const PairPotential &p) {
     out << param << std::endl;
   out << "Range " << p.range_ << std::endl;
   out << "Delta " << p.delta_ << std::endl;
+  if (p.includeCoulomb_)
+    out << "Include Coulomb" << std::endl;
   return out;
 }
 
