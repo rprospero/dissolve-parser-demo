@@ -55,4 +55,4 @@ As an aside about the advantage of this more declarative parsing syle, here's a 
 | [[Visitor-pairPotential.cpp]] |         0 |             2 |         0 |
 | [[Visitor-species.cpp]]       |         0 |             3 |         0 |
 | [[Visitor-master.cpp]]        |         3 |             0 |         0 |
-| [[Visitor.cpp]]               |         2 |             2 |         0 |
+| [[Visitor.cpp]]               |         3 |             2 |         1 |

@@ -33,6 +33,8 @@ antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
 
 // The top level program visitor
 antlrcpp::Any MyVisitor::visitProgram(DissolveParser::ProgramContext *context) {
+  for (auto ctx : context->master())
+    visit(ctx);
   return Program{visitVector<Species>(context->species()),
 		 visit(context->pairPotential(0))};
 }
