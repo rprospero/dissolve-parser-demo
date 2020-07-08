@@ -22,9 +22,16 @@ The structure of the project is roughly as follows:
   value.  The =visit= member function is provided for us and will
   automatically call the correct visit member for any given context.
 
-- [[Visitor.cpp]] :: Implementations of the parsers for the base types (e.g. Boolean and Num).
+
+  There are also a couple of templates that help parsing common
+  situations that arise (e.g. vectors of contexts, default values for
+  missing options).
+
+- [[Visitor.cpp]] :: Implementations of the parsers for the base types (e.g. Boolean and Num).  It also contains the parser for the final =Program= type.
 
 - [[Visitor-species.cpp]] :: Implementations of the =Species= block and all of the parsers needed to implement it.
+
+- [[Visitor-pairPotential.cpp]] :: Implementations of the =PairPotential= block and all of the parsers needed to implement it.
 
 - [[Visitor-master.cpp]] :: Implementations of the =Master= block and all
   of the parsers needed to implement it.  It's worth observing that
@@ -40,3 +47,12 @@ However, it does not seem to handle variant/union/sum types well and
 will crash when trying to pass them.  To this end, parsing functions
 that return a variant type will use a =strict= prefix, instead of
 =visit=, and will return their exact type, instead of =Any=.
+
+As an aside about the advantage of this more declarative parsing syle, here's a break down of the code complexity of a couple of the parsing files
+
+| File                      | Variables | If Statements | For Loops |
+|---------------------------+-----------+---------------+-----------|
+| [[Visitor-pairPotential.cpp]] |         0 |             2 |         0 |
+| [[Visitor-species.cpp]]       |         0 |             3 |         0 |
+| [[Visitor-master.cpp]]        |         3 |             0 |         0 |
+| [[Visitor.cpp]]               |         2 |             2 |         0 |

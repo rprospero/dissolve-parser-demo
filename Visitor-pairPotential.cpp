@@ -17,28 +17,29 @@ MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
       visitFirst(context->pairPotentialsIncludeCoulomb(), false,
 		 [](auto ctx) { return ctx->boolean(); }),
       visitFirst(context->pairPotentialsCoulombTruncation(), false,
-		 [](auto ctx) { return ctx->boolean(); }),
+		 [](auto ctx) { return ctx->truncation(); }),
       visitFirst(context->pairPotentialsShortRangeTruncation(), false,
-		 [](auto ctx) { return ctx->boolean(); })};
+		 [](auto ctx) { return ctx->truncation(); })};
+}
 
-  antlrcpp::Any MyVisitor::visitPairPotentialsParameters(
-      DissolveParser::PairPotentialsParametersContext * context) {
-    return PairPotentialParameters(
-	visit(context->name), visit(context->element), visit(context->strength),
-	visit(context->pp()));
+antlrcpp::Any MyVisitor::visitPairPotentialsParameters(
+    DissolveParser::PairPotentialsParametersContext *context) {
+  return PairPotentialParameters(visit(context->name), visit(context->element),
+				 visit(context->strength),
+				 visit(context->pp()));
+}
+
+antlrcpp::Any MyVisitor::visitPp(DissolveParser::PpContext *context) {
+  if (context->lj()) {
+    return PP(PP::LJ, visitVector<double>(context->lj()->num()));
   }
-
-  antlrcpp::Any MyVisitor::visitPp(DissolveParser::PpContext * context) {
-    if (context->lj()) {
-      return PP(PP::LJ, visitVector<double>(context->lj()->num()));
-    }
-    if (context->ljGeometric()) {
-      return PP(PP::LJGeometric,
-		visitVector<double>(context->ljGeometric()->num()));
-    }
-  };
-
-  antlrcpp::Any MyVisitor::visitTruncation(DissolveParser::TruncationContext *
-					   context) {
-    return context->getText() == "Shifted";
+  if (context->ljGeometric()) {
+    return PP(PP::LJGeometric,
+	      visitVector<double>(context->ljGeometric()->num()));
   }
+};
+
+antlrcpp::Any
+MyVisitor::visitTruncation(DissolveParser::TruncationContext *context) {
+  return context->getText() == "Shifted";
+}

@@ -19,11 +19,7 @@ antlrcpp::Any MyVisitor::visitStr(DissolveParser::StrContext *context) {
 }
 
 antlrcpp::Any MyVisitor::visitVec3(DissolveParser::Vec3Context *context) {
-  Vec3 result;
-  result.x = visit(context->x);
-  result.y = visit(context->y);
-  result.z = visit(context->z);
-  return result;
+  return Vec3{visit(context->x), visit(context->y), visit(context->z)};
 }
 
 antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
@@ -37,10 +33,6 @@ antlrcpp::Any MyVisitor::visitNum(DissolveParser::NumContext *context) {
 
 // The top level program visitor
 antlrcpp::Any MyVisitor::visitProgram(DissolveParser::ProgramContext *context) {
-  std::vector<Species> species;
-  for (auto &ctx : context->species()) {
-    species.push_back(visit(ctx));
-  }
-  auto pp = visit(context->pairPotential(0));
-  return Program(species, pp);
+  return Program{visitVector<Species>(context->species()),
+		 visit(context->pairPotential(0))};
 }
