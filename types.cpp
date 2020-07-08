@@ -131,6 +131,10 @@ std::ostream &operator<<(std::ostream &out, const PairPotential &p) {
   out << "Delta " << p.delta_ << std::endl;
   if (p.includeCoulomb_)
     out << "Include Coulomb" << std::endl;
+  if (p.coulombShifted_)
+    out << "Coulomb Shifted" << std::endl;
+  if (p.shortRangeShifted_)
+    out << "Short Range Shifted" << std::endl;
   return out;
 }
 

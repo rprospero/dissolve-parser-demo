@@ -10,7 +10,8 @@ antlrcpp::Any
 MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
   std::vector<PairPotentialParameters> params;
   double range = 0, delta = 0;
-  bool includeCoulomb;
+  bool includeCoulomb = false, coulombShifted = false,
+       shortRangeShifted = false;
   for (auto &par : context->pairPotentialsParameters()) {
     params.push_back(visitPairPotentialsParameters(par));
   }
@@ -23,8 +24,17 @@ MyVisitor::visitPairPotential(DissolveParser::PairPotentialContext *context) {
   if (!context->pairPotentialsIncludeCoulomb().empty()) {
     includeCoulomb = visit(context->pairPotentialsIncludeCoulomb(0)->boolean());
   }
+  if (!context->pairPotentialsCoulombTruncation().empty()) {
+    coulombShifted =
+	visit(context->pairPotentialsCoulombTruncation(0)->truncation());
+  }
+  if (!context->pairPotentialsShortRangeTruncation().empty()) {
+    shortRangeShifted =
+	visit(context->pairPotentialsShortRangeTruncation(0)->truncation());
+  }
 
-  return PairPotential(params, range, delta, includeCoulomb);
+  return PairPotential(params, range, delta, includeCoulomb, coulombShifted,
+		       shortRangeShifted);
 };
 
 antlrcpp::Any MyVisitor::visitPairPotentialsParameters(
@@ -48,3 +58,8 @@ antlrcpp::Any MyVisitor::visitPp(DissolveParser::PpContext *context) {
     return PP(PP::LJGeometric, params);
   }
 };
+
+antlrcpp::Any
+MyVisitor::visitTruncation(DissolveParser::TruncationContext *context) {
+  return context->getText() == "Shifted";
+}

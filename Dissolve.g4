@@ -96,7 +96,7 @@ pairPotentialsIncludeCoulomb : 'IncludeCoulomb' boolean;
 pairPotentialsCoulombTruncation : 'CoulombTruncation' truncation;
 pairPotentialsShortRangeTruncation : 'ShortRangeTruncation' truncation;
 
-truncation : 'Shifted' ;
+truncation : 'None' | 'Shifted' ;
 
 // Configuration Section
 configuration :

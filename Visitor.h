@@ -66,6 +66,8 @@ public:
 
   antlrcpp::Any visitPp(DissolveParser::PpContext *context) override;
 
+  antlrcpp::Any visitTruncation(DissolveParser::TruncationContext *context) override;
+
   antlrcpp::Any visitPairPotential(DissolveParser::PairPotentialContext *context) override;
 
   antlrcpp::Any visitPairPotentialsParameters(DissolveParser::PairPotentialsParametersContext *context) override;

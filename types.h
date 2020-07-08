@@ -136,19 +136,27 @@ private:
 
 class PairPotential {
 public:
-  PairPotential(std::vector<PairPotentialParameters> params, double range, double delta, bool includeCoulomb) : params_(params), range_(range), delta_(delta), includeCoulomb_(includeCoulomb) {};
-  friend std::ostream& operator<<(std::ostream& out, const PairPotential& s);
+  PairPotential(std::vector<PairPotentialParameters> params, double range,
+		double delta, bool includeCoulomb, bool coulombShifted,
+		bool shortRangeShifted)
+      : params_(params), range_(range), delta_(delta),
+	includeCoulomb_(includeCoulomb), coulombShifted_(coulombShifted),
+	shortRangeShifted_(shortRangeShifted){};
+  friend std::ostream &operator<<(std::ostream &out, const PairPotential &s);
+
 private:
   std::vector<PairPotentialParameters> params_;
   double range_, delta_;
-  bool includeCoulomb_;
+  bool includeCoulomb_, coulombShifted_, shortRangeShifted_;
 };
 
-//The full program specified in the file
+// The full program specified in the file
 class Program {
 public:
-  Program(std::vector<Species> species, PairPotential pairPotential) : species_(species), pairPotential_(pairPotential) {}
-  friend std::ostream& operator<<(std::ostream& out, const Program& p);
+  Program(std::vector<Species> species, PairPotential pairPotential)
+      : species_(species), pairPotential_(pairPotential) {}
+  friend std::ostream &operator<<(std::ostream &out, const Program &p);
+
 private:
   std::vector<Species> species_;
   PairPotential pairPotential_;
