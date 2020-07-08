@@ -9,9 +9,8 @@ private:
   std::map<std::string, BondKind> references_;
 
 public:
-  //The main parser
-  antlrcpp::Any
-  visitProgram(DissolveParser::ProgramContext *context) override;
+  // The main parser
+  antlrcpp::Any visitProgram(DissolveParser::ProgramContext *context) override;
 
   // The parsers for master terms
 
@@ -24,7 +23,7 @@ public:
   antlrcpp::Any
   visitMasterTorsion(DissolveParser::MasterTorsionContext *context) override;
 
-  //The parsers for species terms
+  // The parsers for species terms
 
   antlrcpp::Any visitSpecies(DissolveParser::SpeciesContext *context) override;
 
@@ -49,10 +48,9 @@ public:
   antlrcpp::Any visitSpeciesForcefield(
       DissolveParser::SpeciesForcefieldContext *context) override;
 
-  BondKind
-  strictBondKind(DissolveParser::BondKindContext *context);
+  BondKind strictBondKind(DissolveParser::BondKindContext *context);
 
-  //The parsers for Site components
+  // The parsers for Site components
   antlrcpp::Any
   visitSiteOrigin(DissolveParser::SiteOriginContext *context) override;
 
@@ -62,18 +60,20 @@ public:
   antlrcpp::Any
   visitSiteYAxis(DissolveParser::SiteYAxisContext *context) override;
 
-  //The parsers for pair potential terms
+  // The parsers for pair potential terms
 
   antlrcpp::Any visitPp(DissolveParser::PpContext *context) override;
 
-  antlrcpp::Any visitTruncation(DissolveParser::TruncationContext *context) override;
+  antlrcpp::Any
+  visitTruncation(DissolveParser::TruncationContext *context) override;
 
-  antlrcpp::Any visitPairPotential(DissolveParser::PairPotentialContext *context) override;
+  antlrcpp::Any
+  visitPairPotential(DissolveParser::PairPotentialContext *context) override;
 
-  antlrcpp::Any visitPairPotentialsParameters(DissolveParser::PairPotentialsParametersContext *context) override;
+  antlrcpp::Any visitPairPotentialsParameters(
+      DissolveParser::PairPotentialsParametersContext *context) override;
 
-
-  //The parsers for low level types
+  // The parsers for low level types
   antlrcpp::Any visitStr(DissolveParser::StrContext *context) override;
 
   antlrcpp::Any visitBoolean(DissolveParser::BooleanContext *context) override;
@@ -84,26 +84,45 @@ public:
 
   // A template for handling arrays
   template <typename T, class Context>
-  std::vector<T> visitVector(std::vector<Context*> context) {
+  std::vector<T> visitVector(std::vector<Context *> context) {
     std::vector<T> result;
-    for (auto item : context) result.push_back(visit(item));
+    for (auto item : context)
+      result.push_back(visit(item));
     return result;
   }
+
+  // Visit an array of contexts and apply a lambda to each one.
   template <typename T, class Context, typename Lambda>
-  std::vector<T> visitVector(std::vector<Context*> context, Lambda lambda) {
+  std::vector<T> visitVector(std::vector<Context *> context, Lambda lambda) {
     std::vector<T> result;
-    for (auto item : context) result.push_back(lambda(item));
+    for (auto item : context)
+      result.push_back(lambda(item));
     return result;
   }
+
+  // visit a context returning an optional value that is nullopt if
+  // the context is null
   template <typename T, class Context>
-  std::optional<T> visitOptional(Context* context) {
-    if (context == nullptr) return std::nullopt;
+  std::optional<T> visitOptional(Context *context) {
+    if (context == nullptr)
+      return std::nullopt;
     T result = visit(context);
     return result;
   }
-  template <typename T, class Context>
-  T visitDefault(Context* context, T def) {
-    if (context == nullptr) return def;
+
+  // visit a context with a default value if the context is null
+  template <typename T, class Context> T visitDefault(Context *context, T def) {
+    if (context == nullptr)
+      return def;
     return visit(context);
+  }
+
+  // Pulls the first context from an array if it exists and returns a
+  // default value if the array was empty.
+  template <typename T, class Context, typename Lambda>
+  T visitFirst(std::vector<Context *> context, T def, Lambda lambda) {
+    if (context.empty())
+      return def;
+    return visit(lambda(context.front()));
   }
 };
